@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\LaboratoryExam;
 use App\Models\MedicalSpeciality;
 use Illuminate\Database\Seeder;
 
@@ -16,5 +17,6 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
          MedicalSpeciality::factory(50)->create();
+         LaboratoryExam::factory(50)->create();
     }
 }

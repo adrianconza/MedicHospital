@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Nicolaslopezj\Searchable\SearchableTrait;
 
-class MedicalSpeciality extends Model
+class LaboratoryExam extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -29,7 +29,7 @@ class MedicalSpeciality extends Model
      */
     protected $searchable = [
         'columns' => [
-            'medical_specialities.name' => 10,
+            'laboratory_exams.name' => 10,
         ]
     ];
 }
