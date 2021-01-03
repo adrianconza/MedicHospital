@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImagingExamController;
 use App\Http\Controllers\LaboratoryExamController;
 use App\Http\Controllers\MedicalSpecialityController;
 use Illuminate\Support\Facades\Auth;
@@ -28,3 +29,5 @@ Route::resource('medical-speciality', MedicalSpecialityController::class)->names
 Route::put('medical-speciality/{id}/restore', [MedicalSpecialityController::class, 'restore'])->name('admin.medicalSpeciality.restore');
 Route::resource('laboratory-exam', LaboratoryExamController::class)->names('admin.laboratoryExam');
 Route::put('laboratory-exam/{id}/restore', [LaboratoryExamController::class, 'restore'])->name('admin.laboratoryExam.restore');
+Route::resource('imaging-exam', ImagingExamController::class)->names('admin.imagingExam');
+Route::put('imaging-exam/{id}/restore', [ImagingExamController::class, 'restore'])->name('admin.imagingExam.restore');
