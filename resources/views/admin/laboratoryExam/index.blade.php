@@ -16,9 +16,9 @@
                 <div class="input-group-prepend">
                     <span id="search-icon" class="input-group-text"><i class="fas fa-search"></i></span>
                 </div>
-                <input name="search" type="text" placeholder="Ingrese un texto para buscar..."
+                <input name="search" type="text" placeholder="Ingresa un texto para buscar..."
                        value="{{ $searchValue }}" class="form-control"
-                       aria-label="Ingrese un texto para buscar..."
+                       aria-label="Ingresa un texto para buscar..."
                        aria-describedby="search-icon search-icon">
                 <div class="input-group-append">
                     <button id="search-icon" type="submit" class="btn btn-outline-primary">Buscar</button>
