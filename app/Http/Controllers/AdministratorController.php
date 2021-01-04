@@ -90,10 +90,10 @@ class AdministratorController extends Controller
         })->where('id', $id)->first();
 
         if (!$administrator) {
-            return view('admin.administrator.show', compact('administrator'));
+            return redirect()->route('admin.administrator.index');
         }
 
-        return redirect()->route('admin.administrator.index');
+        return view('admin.administrator.show', compact('administrator'));
     }
 
     /**
@@ -108,13 +108,13 @@ class AdministratorController extends Controller
             $q->where('name', $this->role);
         })->where('id', $id)->first();
 
-        if ($administrator) {
-            $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
-                ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
-            return view('admin.administrator.edit', compact('administrator', 'cities'));
+        if (!$administrator) {
+            return redirect()->route('admin.administrator.index');
         }
 
-        return redirect()->route('admin.administrator.index');
+        $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
+            ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
+        return view('admin.administrator.edit', compact('administrator', 'cities'));
     }
 
     /**
