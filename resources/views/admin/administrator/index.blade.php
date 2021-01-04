@@ -3,15 +3,15 @@
 @section('content')
     <div class="container">
         <div class="d-flex flex-row justify-content-between align-items-center pb-4">
-            <h1 class="text-primary">Exámenes de laboratorio</h1>
+            <h1 class="text-primary">Administradores</h1>
             <div>
-                <a href="{{ route('admin.laboratoryExam.create') }}" class="btn btn-primary px-4">
+                <a href="{{ route('admin.administrator.create') }}" class="btn btn-primary px-4">
                     <span>Crear</span>
                 </a>
             </div>
         </div>
 
-        <form method="GET" action="{{ route('admin.laboratoryExam.index') }}" class="p-0 pb-3 col-md-6">
+        <form method="GET" action="{{ route('admin.administrator.index') }}" class="p-0 pb-3 col-md-6">
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <span id="search-icon" class="input-group-text"><i class="fas fa-search"></i></span>
@@ -31,41 +31,47 @@
                 <thead>
                 <tr>
                     <th scope="col">Nombre</th>
+                    <th scope="col">Cédula</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Teléfono</th>
                     <th scope="col">Estado</th>
                     <th scope="col">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                @if($laboratoryExams->count())
-                    @foreach($laboratoryExams as $laboratoryExam)
-                        <tr id="laboratory-exam-{{ $laboratoryExam->id }}">
-                            <td class="align-middle">{{ $laboratoryExam->name }}</td>
-                            <td class="align-middle">{{ $laboratoryExam->trashed() ? 'Desactivo' : 'Activo' }}</td>
+                @if($users->count())
+                    @foreach($users as $user)
+                        <tr id="user-{{ $user->id }}">
+                            <td class="align-middle">{{ $user->name }} {{ $user->last_name }}</td>
+                            <td class="align-middle">{{ $user->identification }}</td>
+                            <td class="align-middle">{{ $user->email }}</td>
+                            <td class="align-middle">{{ $user->phone }}</td>
+                            <td class="align-middle">{{ $user->trashed() ? 'Desactivo' : 'Activo' }}</td>
                             <td class="align-middle col-action">
                                 <div class="d-flex flex-row justify-content-end align-items-center">
-                                    @if($laboratoryExam->trashed())
+                                    @if($user->trashed())
                                         <button class="btn btn-primary"
-                                                onclick="toggleTableRow('laboratory-exam-'+{{ $laboratoryExam->id }}, 'restore')">
+                                                onclick="toggleTableRow('user-'+{{ $user->id }}, 'restore')">
                                             Activar
                                         </button>
                                     @else
-                                        <a href="{{ route('admin.laboratoryExam.show', $laboratoryExam) }}"
+                                        <a href="{{ route('admin.administrator.show', $user) }}"
                                            class="btn btn-primary mr-1">Ver</a>
-                                        <a href="{{ route('admin.laboratoryExam.edit', $laboratoryExam) }}"
+                                        <a href="{{ route('admin.administrator.edit', $user) }}"
                                            class="btn btn-primary mr-1">Editar</a>
                                         <button class="btn btn-danger"
-                                                onclick="toggleTableRow('laboratory-exam-'+{{ $laboratoryExam->id }}, 'destroy')">
+                                                onclick="toggleTableRow('user-'+{{ $user->id }}, 'destroy')">
                                             Eliminar
                                         </button>
                                     @endif
                                 </div>
                             </td>
-                            <td id="destroy" colspan="3" class="d-none">
+                            <td id="destroy" colspan="6" class="d-none">
                                 <div class="d-flex flex-row justify-content-between align-items-center">
-                                    <span>Estás seguro de <strong>Desactivar</strong> la especialidad médica: <strong>{{ $laboratoryExam->name }}</strong>?</span>
+                                    <span>Estás seguro de <strong>Desactivar</strong> el usuario: <strong>{{ $user->name }} {{ $user->last_name }}</strong>?</span>
                                     <div class="dialog-destroy-btn">
                                         <form
-                                            action="{{ route('admin.laboratoryExam.destroy', $laboratoryExam) }}"
+                                            action="{{ route('admin.administrator.destroy', $user) }}"
                                             method="POST" class="d-inline">
                                             @method('DELETE')
                                             @csrf
@@ -74,18 +80,18 @@
                                             </button>
                                         </form>
                                         <button class="btn btn-secondary"
-                                                onclick="toggleTableRow('laboratory-exam-'+{{ $laboratoryExam->id }}, 'destroy')">
+                                                onclick="toggleTableRow('user-'+{{ $user->id }}, 'destroy')">
                                             <span>No</span>
                                         </button>
                                     </div>
                                 </div>
                             </td>
-                            <td id="restore" colspan="3" class="d-none">
+                            <td id="restore" colspan="6" class="d-none">
                                 <div class="d-flex flex-row justify-content-between align-items-center">
-                                    <span>Estás seguro de <strong>Activar</strong> la especialidad médica: <strong>{{ $laboratoryExam->name }}</strong>?</span>
+                                    <span>Estás seguro de <strong>Activar</strong> el usuario: <strong>{{ $user->name }} {{ $user->last_name }}</strong>?</span>
                                     <div>
                                         <form
-                                            action="{{ route('admin.laboratoryExam.restore', $laboratoryExam->id) }}"
+                                            action="{{ route('admin.administrator.restore', $user->id) }}"
                                             method="POST"
                                             class="d-inline">
                                             @method('PUT')
@@ -95,7 +101,7 @@
                                             </button>
                                         </form>
                                         <button class="btn btn-secondary"
-                                                onclick="toggleTableRow('laboratory-exam-'+{{ $laboratoryExam->id }}, 'restore')">
+                                                onclick="toggleTableRow('user-'+{{ $user->id }}, 'restore')">
                                             <span>No</span>
                                         </button>
                                     </div>
@@ -112,7 +118,7 @@
             </table>
         </div>
         <div class="d-flex flex-row justify-content-end">
-            {{ $laboratoryExams->links() }}
+            {{ $users->links() }}
         </div>
     </div>
 @endsection

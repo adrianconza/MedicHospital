@@ -60,7 +60,7 @@
                                     @endif
                                 </div>
                             </td>
-                            <td id="destroy" colspan="4" class="d-none">
+                            <td id="destroy" colspan="3" class="d-none">
                                 <div class="d-flex flex-row justify-content-between align-items-center">
                                     <span>Estás seguro de <strong>Desactivar</strong> la especialidad médica: <strong>{{ $imagingExam->name }}</strong>?</span>
                                     <div class="dialog-destroy-btn">
@@ -80,7 +80,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td id="restore" colspan="4" class="d-none">
+                            <td id="restore" colspan="3" class="d-none">
                                 <div class="d-flex flex-row justify-content-between align-items-center">
                                     <span>Estás seguro de <strong>Activar</strong> la especialidad médica: <strong>{{ $imagingExam->name }}</strong>?</span>
                                     <div>

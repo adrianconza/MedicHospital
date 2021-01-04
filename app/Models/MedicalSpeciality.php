@@ -9,9 +9,7 @@ use Nicolaslopezj\Searchable\SearchableTrait;
 
 class MedicalSpeciality extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
-    use SearchableTrait;
+    use HasFactory, SoftDeletes, SearchableTrait;
 
     /**
      * The attributes that are mass assignable.
