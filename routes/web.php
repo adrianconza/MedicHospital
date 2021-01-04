@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdministratorController;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ImagingExamController;
 use App\Http\Controllers\LaboratoryExamController;
 use App\Http\Controllers\MedicalSpecialityController;
@@ -28,6 +29,9 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::resource('administrator', AdministratorController::class)->names('admin.administrator');
 Route::put('administrator/{id}/restore', [AdministratorController::class, 'restore'])->name('admin.administrator.restore');
+
+Route::resource('doctor', DoctorController::class)->names('admin.doctor');
+Route::put('doctor/{id}/restore', [DoctorController::class, 'restore'])->name('admin.doctor.restore');
 
 Route::resource('medical-speciality', MedicalSpecialityController::class)->names('admin.medicalSpeciality');
 Route::put('medical-speciality/{id}/restore', [MedicalSpecialityController::class, 'restore'])->name('admin.medicalSpeciality.restore');

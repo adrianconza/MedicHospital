@@ -3,15 +3,15 @@
 @section('content')
     <div class="container">
         <div class="d-flex flex-row justify-content-between align-items-center pb-4">
-            <h1 class="text-primary">Administradores</h1>
+            <h1 class="text-primary">Médicos</h1>
             <div>
-                <a href="{{ route('admin.administrator.create') }}" class="btn btn-primary px-4">
+                <a href="{{ route('admin.doctor.create') }}" class="btn btn-primary px-4">
                     <span>Crear</span>
                 </a>
             </div>
         </div>
 
-        <form method="GET" action="{{ route('admin.administrator.index') }}" class="p-0 pb-3 col-md-6">
+        <form method="GET" action="{{ route('admin.doctor.index') }}" class="p-0 pb-3 col-md-6">
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <span id="search-icon" class="input-group-text"><i class="fas fa-search"></i></span>
@@ -55,9 +55,9 @@
                                             Activar
                                         </button>
                                     @else
-                                        <a href="{{ route('admin.administrator.show', $user) }}"
+                                        <a href="{{ route('admin.doctor.show', $user) }}"
                                            class="btn btn-primary mr-1">Ver</a>
-                                        <a href="{{ route('admin.administrator.edit', $user) }}"
+                                        <a href="{{ route('admin.doctor.edit', $user) }}"
                                            class="btn btn-primary mr-1">Editar</a>
                                         <button class="btn btn-danger"
                                                 onclick="toggleTableRow('user-'+{{ $user->id }}, 'destroy')">
@@ -68,10 +68,10 @@
                             </td>
                             <td id="destroy" colspan="6" class="d-none">
                                 <div class="d-flex flex-row justify-content-between align-items-center">
-                                    <span>Estás seguro de <strong>Desactivar</strong> el administrador: <strong>{{ $user->name }} {{ $user->last_name }}</strong>?</span>
+                                    <span>Estás seguro de <strong>Desactivar</strong> el médico: <strong>{{ $user->name }} {{ $user->last_name }}</strong>?</span>
                                     <div class="dialog-destroy-btn">
                                         <form
-                                            action="{{ route('admin.administrator.destroy', $user) }}"
+                                            action="{{ route('admin.doctor.destroy', $user) }}"
                                             method="POST" class="d-inline">
                                             @method('DELETE')
                                             @csrf
@@ -88,10 +88,10 @@
                             </td>
                             <td id="restore" colspan="6" class="d-none">
                                 <div class="d-flex flex-row justify-content-between align-items-center">
-                                    <span>Estás seguro de <strong>Activar</strong> el administrador: <strong>{{ $user->name }} {{ $user->last_name }}</strong>?</span>
+                                    <span>Estás seguro de <strong>Activar</strong> el médico: <strong>{{ $user->name }} {{ $user->last_name }}</strong>?</span>
                                     <div>
                                         <form
-                                            action="{{ route('admin.administrator.restore', $user->id) }}"
+                                            action="{{ route('admin.doctor.restore', $user->id) }}"
                                             method="POST"
                                             class="d-inline">
                                             @method('PUT')
