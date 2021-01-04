@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Province extends Model
+class Role extends Model
 {
     use HasFactory, SoftDeletes;
 
     /**
-     * Get the cities for the province.
+     * Get the users for the role.
      */
-    public function cities()
+    public function users()
     {
-        return $this->hasMany(City::class);
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 }

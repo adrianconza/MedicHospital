@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\ImagingExamController;
 use App\Http\Controllers\LaboratoryExamController;
 use App\Http\Controllers\MedicalSpecialityController;
@@ -25,9 +26,14 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Route::resource('administrator', AdministratorController::class)->names('admin.administrator');
+Route::put('administrator/{id}/restore', [AdministratorController::class, 'restore'])->name('admin.administrator.restore');
+
 Route::resource('medical-speciality', MedicalSpecialityController::class)->names('admin.medicalSpeciality');
 Route::put('medical-speciality/{id}/restore', [MedicalSpecialityController::class, 'restore'])->name('admin.medicalSpeciality.restore');
+
 Route::resource('laboratory-exam', LaboratoryExamController::class)->names('admin.laboratoryExam');
 Route::put('laboratory-exam/{id}/restore', [LaboratoryExamController::class, 'restore'])->name('admin.laboratoryExam.restore');
+
 Route::resource('imaging-exam', ImagingExamController::class)->names('admin.imagingExam');
 Route::put('imaging-exam/{id}/restore', [ImagingExamController::class, 'restore'])->name('admin.imagingExam.restore');

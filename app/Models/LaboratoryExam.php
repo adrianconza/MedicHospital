@@ -9,9 +9,7 @@ use Nicolaslopezj\Searchable\SearchableTrait;
 
 class LaboratoryExam extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
-    use SearchableTrait;
+    use HasFactory, SoftDeletes, SearchableTrait;
 
     /**
      * The attributes that are mass assignable.
