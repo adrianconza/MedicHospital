@@ -10,9 +10,9 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class DoctorController extends Controller
+class ClientController extends Controller
 {
-    private $role = 'Médico';
+    private $role = 'Cliente';
 
     /**
      * Display a listing of the resource.
@@ -32,7 +32,7 @@ class DoctorController extends Controller
                 $q->where('name', $this->role);
             })->orderBy('name')->paginate(10);
         }
-        return view('admin.doctor.index', compact('users', 'searchValue'));
+        return view('admin.client.index', compact('users', 'searchValue'));
     }
 
     /**
@@ -44,7 +44,7 @@ class DoctorController extends Controller
     {
         $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
             ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
-        return view('admin.doctor.create', compact('cities'));
+        return view('admin.client.create', compact('cities'));
     }
 
     /**
@@ -69,12 +69,12 @@ class DoctorController extends Controller
         ]);
         $city = City::where('id', $request->city_id)->first();
         $role = Role::where('name', $this->role)->first();
-        $doctor = new User();
-        $doctor->fill($request->all());
-        $doctor->city()->associate($city);
-        $doctor->save();
-        $doctor->roles()->attach([$role->id]);
-        return redirect()->route('admin.doctor.index');
+        $client = new User();
+        $client->fill($request->all());
+        $client->city()->associate($city);
+        $client->save();
+        $client->roles()->attach([$role->id]);
+        return redirect()->route('admin.client.index');
     }
 
     /**l
@@ -85,15 +85,15 @@ class DoctorController extends Controller
      */
     public function show(int $id)
     {
-        $doctor = User::withTrashed()->whereHas('roles', function ($q) {
+        $client = User::withTrashed()->whereHas('roles', function ($q) {
             $q->where('name', $this->role);
         })->where('id', $id)->first();
 
-        if (!$doctor) {
-            return redirect()->route('admin.doctor.index');
+        if (!$client) {
+            return redirect()->route('admin.client.index');
         }
 
-        return view('admin.doctor.show', compact('doctor'));
+        return view('admin.client.show', compact('client'));
     }
 
     /**
@@ -104,17 +104,17 @@ class DoctorController extends Controller
      */
     public function edit(int $id)
     {
-        $doctor = User::withTrashed()->whereHas('roles', function ($q) {
+        $client = User::withTrashed()->whereHas('roles', function ($q) {
             $q->where('name', $this->role);
         })->where('id', $id)->first();
 
-        if (!$doctor) {
-            return redirect()->route('admin.doctor.index');
+        if (!$client) {
+            return redirect()->route('admin.client.index');
         }
 
         $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
             ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
-        return view('admin.doctor.edit', compact('doctor', 'cities'));
+        return view('admin.client.edit', compact('client', 'cities'));
     }
 
     /**
@@ -126,18 +126,18 @@ class DoctorController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        $doctor = User::withTrashed()->whereHas('roles', function ($q) {
+        $client = User::withTrashed()->whereHas('roles', function ($q) {
             $q->where('name', $this->role);
         })->where('id', $id)->first();
 
-        if (!$doctor) {
-            return redirect()->route('admin.doctor.index');
+        if (!$client) {
+            return redirect()->route('admin.client.index');
         }
 
         $request->validate([
-            'email' => "bail|required|max:255|unique:users,email,$doctor->id|email|string",
+            'email' => "bail|required|max:255|unique:users,email,$client->id|email|string",
             'password' => 'bail|required|min:8|confirmed|string',
-            'identification' => "bail|required|digits:10|unique:users,identification,$doctor->id|numeric",
+            'identification' => "bail|required|digits:10|unique:users,identification,$client->id|numeric",
             'name' => 'bail|required|min:5|max:100|alpha|string',
             'last_name' => 'bail|required|min:5|max:100|alpha|string',
             'phone' => 'bail|required|digits:10|numeric',
@@ -147,11 +147,11 @@ class DoctorController extends Controller
             'city_id' => 'bail|required|numeric',
         ]);
         $city = City::where('id', $request->city_id)->first();
-        $doctor = new User();
-        $doctor->fill($request->all());
-        $doctor->city()->associate($city);
-        $doctor->save();
-        return redirect()->route('admin.doctor.index');
+        $client = new User();
+        $client->fill($request->all());
+        $client->city()->associate($city);
+        $client->save();
+        return redirect()->route('admin.client.index');
     }
 
     /**
@@ -163,16 +163,16 @@ class DoctorController extends Controller
      */
     public function destroy(int $id)
     {
-        $doctor = User::withTrashed()->whereHas('roles', function ($q) {
+        $client = User::withTrashed()->whereHas('roles', function ($q) {
             $q->where('name', $this->role);
         })->where('id', $id)->first();
 
-        if (!$doctor) {
-            return redirect()->route('admin.doctor.index');
+        if (!$client) {
+            return redirect()->route('admin.client.index');
         }
 
-        $doctor->delete();
-        return redirect()->route('admin.doctor.index');
+        $client->delete();
+        return redirect()->route('admin.client.index');
     }
 
     /**
@@ -183,15 +183,15 @@ class DoctorController extends Controller
      */
     public function restore(int $id)
     {
-        $doctor = User::withTrashed()->whereHas('roles', function ($q) {
+        $client = User::withTrashed()->whereHas('roles', function ($q) {
             $q->where('name', $this->role);
         })->where('id', $id)->first();
 
-        if (!$doctor) {
-            return redirect()->route('admin.doctor.index');
+        if (!$client) {
+            return redirect()->route('admin.client.index');
         }
 
-        $doctor->restore();
-        return redirect()->route('admin.doctor.index');
+        $client->restore();
+        return redirect()->route('admin.client.index');
     }
 }
