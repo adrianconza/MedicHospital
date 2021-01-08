@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImagingExamController;
 use App\Http\Controllers\LaboratoryExamController;
 use App\Http\Controllers\MedicalSpecialityController;
@@ -21,13 +22,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/login');
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::resource('administrator', AdministratorController::class)->names('admin.administrator');
 Route::put('administrator/{id}/restore', [AdministratorController::class, 'restore'])->name('admin.administrator.restore');
