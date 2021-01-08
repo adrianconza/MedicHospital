@@ -27,6 +27,7 @@ class CreateUsersTable extends Migration
             $table->foreignId('city_id')
                 ->constrained()
                 ->onUpdate('cascade');
+            $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
         });
