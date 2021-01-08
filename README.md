@@ -3,7 +3,7 @@
 ## ✍️ Description
 Hospital management system, using laravel and mysql.
 
-###Note to run the application:
+> ### Note to run the application:
 > * You need to create a database
 > * Copy the `.env.example` file to `.env`
 > * Configure the connection for the database
