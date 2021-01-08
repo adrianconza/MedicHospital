@@ -141,10 +141,10 @@ class AdministratorController extends Controller
             'name' => 'bail|required|min:5|max:100|alpha|string',
             'last_name' => 'bail|required|min:5|max:100|alpha|string',
             'phone' => 'bail|required|digits:10|numeric',
-            'address' => 'bail|min:5|max:200|alpha|string',
-            'birthday' => 'bail|after:"1900-01-01"|before:today|date',
-            'gender' => 'bail|in:M,F',
-            'city_id' => 'bail|required|numeric',
+            'address' => 'bail|nullable|min:5|max:200|alpha|string',
+            'birthday' => 'bail|nullable|after:"1900-01-01"|before:today|date',
+            'gender' => 'bail|nullable|in:M,F',
+            'city_id' => 'bail|required',
         ]);
         $city = City::where('id', $request->city_id)->first();
         $administrator = new User();

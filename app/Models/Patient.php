@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Nicolaslopezj\Searchable\SearchableTrait;
 
-class User extends Authenticatable
+class Patient extends Model
 {
     use HasFactory, Notifiable, SoftDeletes, SearchableTrait;
 
@@ -19,7 +19,6 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'email',
-        'password',
         'identification',
         'name',
         'last_name',
@@ -30,46 +29,29 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password',
-    ];
-
-    /**
      * Searchable rules.
      *
      * @var array
      */
     protected $searchable = [
         'columns' => [
-            'users.email' => 10,
-            'users.identification' => 10,
-            'users.name' => 10,
-            'users.last_name' => 10,
+            'patients.identification' => 10,
+            'patients.name' => 10,
+            'patients.last_name' => 10,
+            'patients.email' => 5,
         ]
     ];
 
     /**
-     * Get the roles for the user.
+     * Get the users for the patient.
      */
-    public function roles()
+    public function users()
     {
-        return $this->belongsToMany(Role::class)->withTimestamps();
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 
     /**
-     * Get the patients for the user.
-     */
-    public function patients()
-    {
-        return $this->belongsToMany(Patient::class)->withTimestamps();
-    }
-
-    /**
-     * Get the city for the user.
+     * Get the city for the patient.
      */
     public function city()
     {

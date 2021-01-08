@@ -6,6 +6,7 @@ use App\Models\City;
 use App\Models\ImagingExam;
 use App\Models\LaboratoryExam;
 use App\Models\MedicalSpeciality;
+use App\Models\Patient;
 use App\Models\Province;
 use App\Models\Role;
 use App\Models\User;
@@ -25,6 +26,7 @@ class DatabaseSeeder extends Seeder
         });
 
         $cities = City::all();
+
         User::factory(50)->make()->each(function ($user) use ($cities) {
             $user->city()->associate($cities->random(1)->first());
             $user->save();
@@ -32,9 +34,16 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $roles = Role::all();
         User::all()->each(function ($user) use ($roles) {
-            $user->roles()->attach(
-                $roles->random(rand(1, 3))->pluck('id')->toArray()
-            );
+            $user->roles()->attach($roles->random(rand(1, 3))->pluck('id')->toArray());
+        });
+
+        Patient::factory(50)->make()->each(function ($patient) use ($cities) {
+            $patient->city()->associate($cities->random(1)->first());
+            $patient->save();
+        });
+        $patients = Patient::all();
+        User::all()->each(function ($user) use ($patients) {
+            $user->patients()->attach($patients->random(rand(1, 5))->pluck('id')->toArray());
         });
 
         MedicalSpeciality::factory(50)->create();

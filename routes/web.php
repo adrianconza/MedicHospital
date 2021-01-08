@@ -6,6 +6,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ImagingExamController;
 use App\Http\Controllers\LaboratoryExamController;
 use App\Http\Controllers\MedicalSpecialityController;
+use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,9 @@ Route::put('doctor/{id}/restore', [DoctorController::class, 'restore'])->name('a
 
 Route::resource('client', ClientController::class)->names('admin.client');
 Route::put('client/{id}/restore', [ClientController::class, 'restore'])->name('admin.client.restore');
+
+Route::resource('patient', PatientController::class)->names('admin.patient');
+Route::put('patient/{id}/restore', [PatientController::class, 'restore'])->name('admin.patient.restore');
 
 Route::resource('medical-speciality', MedicalSpecialityController::class)->names('admin.medicalSpeciality');
 Route::put('medical-speciality/{id}/restore', [MedicalSpecialityController::class, 'restore'])->name('admin.medicalSpeciality.restore');
