@@ -45,8 +45,7 @@ class PatientController extends Controller
      */
     public function create()
     {
-        $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
-            ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
+        $cities = City::citiesAndProvinces();
         return view('admin.patient.create', compact('cities'));
     }
 
@@ -59,17 +58,17 @@ class PatientController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'name' => 'bail|required|min:5|max:100|alpha_spaces|string',
+            'last_name' => 'bail|required|min:5|max:100|alpha_spaces|string',
             'identification' => 'bail|required|digits:10|unique:patients|numeric',
-            'name' => 'bail|required|min:5|max:100|alpha|string',
-            'last_name' => 'bail|required|min:5|max:100|alpha|string',
             'email' => 'bail|nullable|max:255|email|string',
             'phone' => 'bail|nullable|digits:10|numeric',
-            'address' => 'bail|required|min:5|max:200|alpha|string',
+            'address' => 'bail|required|min:5|max:200|string',
             'birthday' => 'bail|required|after:"1900-01-01"|before:today|date',
             'gender' => 'bail|required|in:M,F',
             'city_id' => 'bail|required',
         ]);
-        $city = City::where('id', $request->city_id)->first();
+        $city = City::find($request->city_id);
         $patient = new Patient();
         $patient->fill($request->all());
         $patient->city()->associate($city);
@@ -96,8 +95,7 @@ class PatientController extends Controller
      */
     public function edit(Patient $patient)
     {
-        $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
-            ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
+        $cities = City::citiesAndProvinces();
         return view('admin.patient.edit', compact('patient', 'cities'));
     }
 
@@ -111,17 +109,17 @@ class PatientController extends Controller
     public function update(Request $request, Patient $patient)
     {
         $request->validate([
+            'name' => 'bail|required|min:5|max:100|alpha_spaces|string',
+            'last_name' => 'bail|required|min:5|max:100|alpha_spaces|string',
             'identification' => "bail|required|digits:10|unique:patients,identification,$patient->id|numeric",
-            'name' => 'bail|required|min:5|max:100|alpha|string',
-            'last_name' => 'bail|required|min:5|max:100|alpha|string',
             'email' => 'bail|nullable|max:255|email|string',
             'phone' => 'bail|nullable|digits:10|numeric',
-            'address' => 'bail|required|min:5|max:200|alpha|string',
+            'address' => 'bail|required|min:5|max:200|string',
             'birthday' => 'bail|required|after:"1900-01-01"|before:today|date',
             'gender' => 'bail|required|in:M,F',
             'city_id' => 'bail|required',
         ]);
-        $city = City::where('id', $request->city_id)->first();
+        $city = City::find($request->city_id);
         $patient->fill($request->all());
         $patient->city()->associate($city);
         $patient->save();

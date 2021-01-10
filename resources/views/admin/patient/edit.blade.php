@@ -8,7 +8,7 @@
             @csrf
 
             <div class="form-group col-md-6 p-0">
-                <label for="name">Nombre</label>
+                <label for="name">Nombre *</label>
                 <input id="name" name="name" type="text" required placeholder="Ingresa el nombre" autofocus
                        value="{{ old('name', $patient->name) }}"
                        class="form-control @error('name') is-invalid @enderror" aria-describedby="validation-name">
@@ -18,7 +18,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="last_name">Apellido</label>
+                <label for="last_name">Apellido *</label>
                 <input id="last_name" name="last_name" type="text" required placeholder="Ingresa el apellido"
                        value="{{ old('last_name', $patient->last_name) }}"
                        class="form-control @error('last_name') is-invalid @enderror"
@@ -29,7 +29,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="identification">Cédula</label>
+                <label for="identification">Cédula *</label>
                 <input id="identification" name="identification" type="text" required placeholder="Ingresa la cédula"
                        value="{{ old('identification', $patient->identification) }}"
                        class="form-control @error('identification') is-invalid @enderror"
@@ -62,7 +62,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="address">Dirección</label>
+                <label for="address">Dirección *</label>
                 <input id="address" name="address" type="text" placeholder="Ingresa la dirección"
                        value="{{ old('address', $patient->address) }}"
                        class="form-control @error('address') is-invalid @enderror"
@@ -73,7 +73,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="birthday">Fecha de nacimiento</label>
+                <label for="birthday">Fecha de nacimiento *</label>
                 <input id="birthday" name="birthday" type="text" placeholder="Ingresa la fecha de nacimiento"
                        value="{{ old('birthday', $patient->birthday) }}"
                        class="form-control @error('birthday') is-invalid @enderror"
@@ -85,7 +85,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="gender">Género</label>
+                <label for="gender">Género *</label>
                 <select id="gender" name="gender" class="form-control @error('gender') is-invalid @enderror"
                         aria-describedby="validation-gender">
                     <option value="{{ null }}">Selecciona el género</option>
@@ -100,13 +100,13 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="city_id">Ciudad</label>
+                <label for="city_id">Ciudad *</label>
                 <select id="city_id" name="city_id" class="form-control @error('city_id') is-invalid @enderror"
                         aria-describedby="validation-city">
                     <option value="">Selecciona la ciudad</option>
                     @foreach($cities as $city)
                         <option
-                            value="{{ $city->id }}" {{ old('city_id', $patient->city_id) === $city->id ? 'selected' : '' }}>{{ $city->province->name }}
+                            value="{{ $city->id }}" {{ +old('city_id', $patient->city_id) === +$city->id ? 'selected' : '' }}>{{ $city->province->name }}
                             , {{ $city->name }}</option>
                     @endforeach
                 </select>
