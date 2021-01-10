@@ -11,6 +11,15 @@ class City extends Model
     use HasFactory, SoftDeletes;
 
     /**
+     * Get the cities and provinces.
+     */
+    public static function citiesAndProvinces()
+    {
+        return City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
+            ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
+    }
+
+    /**
      * Get the province for the city.
      */
     public function province()

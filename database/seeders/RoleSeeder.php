@@ -14,16 +14,13 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        $administrator = new Role();
-        $administrator->name = 'Administrador';
+        $administrator = new Role(['name' => Role::ADMINISTRATOR]);
         $administrator->save();
 
-        $doctor = new Role();
-        $doctor->name = 'Médico';
+        $doctor = new Role(['name' => Role::DOCTOR]);
         $doctor->save();
 
-        $client = new Role();
-        $client->name = 'Cliente';
+        $client = new Role(['name' => Role::CLIENT]);
         $client->save();
     }
 }

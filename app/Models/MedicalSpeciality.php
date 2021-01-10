@@ -30,4 +30,12 @@ class MedicalSpeciality extends Model
             'medical_specialities.name' => 10,
         ]
     ];
+
+    /**
+     * Get the users for the medical speciality.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
 }

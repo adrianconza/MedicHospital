@@ -46,10 +46,10 @@
                             <td class="align-middle">{{ $user->identification }}</td>
                             <td class="align-middle">{{ $user->email }}</td>
                             <td class="align-middle">{{ $user->phone }}</td>
-                            <td class="align-middle">{{ $user->trashed() ? 'Desactivo' : 'Activo' }}</td>
+                            <td class="align-middle">{{ $user->isActiveDoctor() ? 'Activo' : 'Desactivo' }}</td>
                             <td class="align-middle col-action">
                                 <div class="d-flex flex-row justify-content-end align-items-center">
-                                    @if($user->trashed())
+                                    @if(!$user->isActiveDoctor())
                                         <button class="btn btn-primary"
                                                 onclick="toggleTableRow('user-'+{{ $user->id }}, 'restore')">
                                             Activar
@@ -111,7 +111,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="4" class="text-center">No se encontraron resultados.</td>
+                        <td colspan="6" class="text-center">No se encontraron resultados.</td>
                     </tr>
                 @endif
                 </tbody>

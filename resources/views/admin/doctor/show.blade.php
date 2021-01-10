@@ -40,14 +40,35 @@
         </div>
 
         <div class="form-group col-md-6 p-0">
-            <label for="name">Genero</label>
+            <label for="name">Género</label>
             <input id="name" type="text" disabled
-                   value="{{ $doctor->gender === 'M' ? 'Masculino' : 'Femenino'  }}" class="form-control">
+                   value="{{ isset($doctor->gender) ? $doctor->gender === 'M' ? 'Masculino' : 'Femenino' : '' }}"
+                   class="form-control">
         </div>
 
         <div class="form-group col-md-6 p-0">
             <label for="name">Ciudad</label>
             <input id="name" type="text" disabled value="{{ $doctor->city->name }}" class="form-control">
+        </div>
+
+        <div class="table-responsive col-md-6 p-0">
+            <label for="name">Especialidades médicas</label>
+            <table id="medical_specialities" class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Nombre</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($doctor->medicalSpecialities as $medicalSpeciality)
+                    <tr>
+                        <td class="align-middle">
+                            {{$medicalSpeciality->name}}
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
         </div>
 
         <div class="pt-3">

@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    private $role = 'Cliente';
+    private $role = 'Client';
 
     /**
      * Create a new controller instance.
@@ -52,8 +52,7 @@ class ClientController extends Controller
      */
     public function create()
     {
-        $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
-            ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
+        $cities = City::citiesAndProvinces();
         return view('admin.client.create', compact('cities'));
     }
 
@@ -122,8 +121,7 @@ class ClientController extends Controller
             return redirect()->route('admin.client.index');
         }
 
-        $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
-            ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
+        $cities = City::citiesAndProvinces();
         return view('admin.client.edit', compact('client', 'cities'));
     }
 
