@@ -111,7 +111,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="4" class="text-center">No se encontraron resultados.</td>
+                        <td colspan="6" class="text-center">No se encontraron resultados.</td>
                     </tr>
                 @endif
                 </tbody>

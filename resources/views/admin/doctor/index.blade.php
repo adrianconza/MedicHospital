@@ -49,12 +49,7 @@
                             <td class="align-middle">{{ $user->isActiveDoctor() ? 'Activo' : 'Desactivo' }}</td>
                             <td class="align-middle col-action">
                                 <div class="d-flex flex-row justify-content-end align-items-center">
-                                    @if(!$user->isActiveDoctor())
-                                        <button class="btn btn-primary"
-                                                onclick="toggleTableRow('user-'+{{ $user->id }}, 'restore')">
-                                            Activar
-                                        </button>
-                                    @else
+                                    @if($user->isActiveDoctor())
                                         <a href="{{ route('admin.doctor.show', $user) }}"
                                            class="btn btn-primary mr-1">Ver</a>
                                         <a href="{{ route('admin.doctor.edit', $user) }}"
@@ -62,6 +57,11 @@
                                         <button class="btn btn-danger"
                                                 onclick="toggleTableRow('user-'+{{ $user->id }}, 'destroy')">
                                             Eliminar
+                                        </button>
+                                    @else
+                                        <button class="btn btn-primary"
+                                                onclick="toggleTableRow('user-'+{{ $user->id }}, 'restore')">
+                                            Activar
                                         </button>
                                     @endif
                                 </div>

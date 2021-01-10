@@ -81,7 +81,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the active rol administrator for the user.
+     * Have the active rol administrator for the user.
      *
      * @return bool
      */
@@ -101,7 +101,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the active rol doctor for the user.
+     * Have the active rol doctor for the user.
      *
      * @return bool
      */
@@ -121,7 +121,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the active rol client for the user.
+     * Have the active rol client for the user.
      *
      * @return bool
      */
@@ -143,7 +143,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the active rol for the user.
+     * Have the active rol for the user.
      *
      * @param Role $role
      * @return bool

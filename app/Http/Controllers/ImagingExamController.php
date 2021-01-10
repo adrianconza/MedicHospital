@@ -56,7 +56,7 @@ class ImagingExamController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'bail|required|min:5|max:100|unique:imaging_exams|alpha|string'
+            'name' => 'bail|required|min:5|max:100|unique:imaging_exams|alpha_spaces|string'
         ]);
         ImagingExam::create($request->all());
         return redirect()->route('admin.imagingExam.index');
@@ -94,7 +94,7 @@ class ImagingExamController extends Controller
     public function update(Request $request, ImagingExam $imagingExam)
     {
         $request->validate([
-            'name' => "bail|required|min:5|max:100|unique:imaging_exams,name,$imagingExam->id|alpha|string"
+            'name' => "bail|required|min:5|max:100|unique:imaging_exams,name,$imagingExam->id|alpha_spaces|string"
         ]);
         $imagingExam->update($request->all());
         return redirect()->route('admin.imagingExam.index');
@@ -121,9 +121,7 @@ class ImagingExamController extends Controller
      */
     public function restore(int $id)
     {
-        ImagingExam::withTrashed()
-            ->where('id', $id)
-            ->restore();
+        ImagingExam::withTrashed()->where('id', $id)->restore();
         return redirect()->route('admin.imagingExam.index');
     }
 }

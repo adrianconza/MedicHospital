@@ -9,11 +9,11 @@ use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
-    private $role = 'Client';
-
     /**
      * Create a new controller instance.
      *
@@ -35,11 +35,11 @@ class ClientController extends Controller
         $searchValue = $request->get('search');
         if ($request->has('search') && $searchValue !== null) {
             $users = User::search($searchValue)->whereHas('roles', function ($q) {
-                $q->where('name', $this->role);
+                $q->where('name', Role::CLIENT);
             })->paginate(10)->withQueryString();
         } else {
             $users = User::withTrashed()->whereHas('roles', function ($q) {
-                $q->where('name', $this->role);
+                $q->where('name', Role::CLIENT);
             })->orderBy('name')->paginate(10);
         }
         return view('admin.client.index', compact('users', 'searchValue'));
@@ -68,18 +68,19 @@ class ClientController extends Controller
             'email' => 'bail|required|max:255|unique:users|email|string',
             'password' => 'bail|required|min:8|confirmed|string',
             'identification' => 'bail|required|digits:10|unique:users|numeric',
-            'name' => 'bail|required|min:5|max:100|alpha|string',
-            'last_name' => 'bail|required|min:5|max:100|alpha|string',
+            'name' => 'bail|required|min:5|max:100|alpha_spaces|string',
+            'last_name' => 'bail|required|min:5|max:100|alpha_spaces|string',
             'phone' => 'bail|required|digits:10|numeric',
-            'address' => 'bail|nullable|min:5|max:200|alpha|string',
+            'address' => 'bail|nullable|min:5|max:200|string',
             'birthday' => 'bail|nullable|after:"1900-01-01"|before:today|date',
             'gender' => 'bail|nullable|in:M,F',
             'city_id' => 'bail|required',
         ]);
-        $city = City::where('id', $request->city_id)->first();
-        $role = Role::where('name', $this->role)->first();
+        $city = City::find($request->city_id);
+        $role = Role::client();
         $client = new User();
         $client->fill($request->all());
+        $client->password = Hash::make($request->password);
         $client->city()->associate($city);
         $client->save();
         $client->roles()->attach([$role->id]);
@@ -89,16 +90,12 @@ class ClientController extends Controller
     /**l
      * Display the specified resource.
      *
-     * @param int $id
+     * @param User $client
      * @return View|RedirectResponse
      */
-    public function show(int $id)
+    public function show(User $client)
     {
-        $client = User::withTrashed()->whereHas('roles', function ($q) {
-            $q->where('name', $this->role);
-        })->where('id', $id)->first();
-
-        if (!$client) {
+        if (!$client->isActiveClient()) {
             return redirect()->route('admin.client.index');
         }
 
@@ -108,16 +105,12 @@ class ClientController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param User $client
      * @return View|RedirectResponse
      */
-    public function edit(int $id)
+    public function edit(User $client)
     {
-        $client = User::withTrashed()->whereHas('roles', function ($q) {
-            $q->where('name', $this->role);
-        })->where('id', $id)->first();
-
-        if (!$client) {
+        if (!$client->isActiveClient()) {
             return redirect()->route('admin.client.index');
         }
 
@@ -129,33 +122,27 @@ class ClientController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int $id
+     * @param User $client
      * @return RedirectResponse
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, User $client)
     {
-        $client = User::withTrashed()->whereHas('roles', function ($q) {
-            $q->where('name', $this->role);
-        })->where('id', $id)->first();
-
-        if (!$client) {
+        if (!$client->isActiveClient()) {
             return redirect()->route('admin.client.index');
         }
 
         $request->validate([
             'email' => "bail|required|max:255|unique:users,email,$client->id|email|string",
-            'password' => 'bail|required|min:8|confirmed|string',
             'identification' => "bail|required|digits:10|unique:users,identification,$client->id|numeric",
-            'name' => 'bail|required|min:5|max:100|alpha|string',
-            'last_name' => 'bail|required|min:5|max:100|alpha|string',
+            'name' => 'bail|required|min:5|max:100|alpha_spaces|string',
+            'last_name' => 'bail|required|min:5|max:100|alpha_spaces|string',
             'phone' => 'bail|required|digits:10|numeric',
-            'address' => 'bail|nullable|min:5|max:200|alpha|string',
+            'address' => 'bail|nullable|min:5|max:200|string',
             'birthday' => 'bail|nullable|after:"1900-01-01"|before:today|date',
             'gender' => 'bail|nullable|in:M,F',
             'city_id' => 'bail|required',
         ]);
-        $city = City::where('id', $request->city_id)->first();
-        $client = new User();
+        $city = City::find($request->city_id);
         $client->fill($request->all());
         $client->city()->associate($city);
         $client->save();
@@ -165,21 +152,18 @@ class ClientController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param User $client
      * @return RedirectResponse
      * @throws Exception
      */
-    public function destroy(int $id)
+    public function destroy(User $client)
     {
-        $client = User::withTrashed()->whereHas('roles', function ($q) {
-            $q->where('name', $this->role);
-        })->where('id', $id)->first();
-
-        if (!$client) {
+        if (!$client->isActiveClient()) {
             return redirect()->route('admin.client.index');
         }
 
-        $client->delete();
+        $role = Role::client();
+        $client->roles()->updateExistingPivot($role->id, ['deleted_at' => Date::now()]);
         return redirect()->route('admin.client.index');
     }
 
@@ -191,15 +175,13 @@ class ClientController extends Controller
      */
     public function restore(int $id)
     {
-        $client = User::withTrashed()->whereHas('roles', function ($q) {
-            $q->where('name', $this->role);
-        })->where('id', $id)->first();
-
-        if (!$client) {
+        $client = User::find($id);
+        if (!$client->isDoctor() || $client->isActiveDoctor()) {
             return redirect()->route('admin.client.index');
         }
 
-        $client->restore();
+        $role = Role::doctor();
+        $client->roles()->updateExistingPivot($role->id, ['deleted_at' => null]);
         return redirect()->route('admin.client.index');
     }
 }

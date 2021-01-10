@@ -56,7 +56,7 @@ class LaboratoryExamController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'bail|required|min:5|max:100|unique:laboratory_exams|alpha|string'
+            'name' => 'bail|required|min:5|max:100|unique:laboratory_exams|alpha_spaces|string'
         ]);
         LaboratoryExam::create($request->all());
         return redirect()->route('admin.laboratoryExam.index');
@@ -94,7 +94,7 @@ class LaboratoryExamController extends Controller
     public function update(Request $request, LaboratoryExam $laboratoryExam)
     {
         $request->validate([
-            'name' => "bail|required|min:5|max:100|unique:laboratory_exams,name,$laboratoryExam->id|alpha|string"
+            'name' => "bail|required|min:5|max:100|unique:laboratory_exams,name,$laboratoryExam->id|alpha_spaces|string"
         ]);
         $laboratoryExam->update($request->all());
         return redirect()->route('admin.laboratoryExam.index');
@@ -121,9 +121,7 @@ class LaboratoryExamController extends Controller
      */
     public function restore(int $id)
     {
-        LaboratoryExam::withTrashed()
-            ->where('id', $id)
-            ->restore();
+        LaboratoryExam::withTrashed()->where('id', $id)->restore();
         return redirect()->route('admin.laboratoryExam.index');
     }
 }

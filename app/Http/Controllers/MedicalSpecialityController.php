@@ -56,7 +56,7 @@ class MedicalSpecialityController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'bail|required|min:5|max:100|unique:medical_specialities|alpha|string'
+            'name' => 'bail|required|min:5|max:100|unique:medical_specialities|alpha_spaces|string'
         ]);
         MedicalSpeciality::create($request->all());
         return redirect()->route('admin.medicalSpeciality.index');
@@ -94,7 +94,7 @@ class MedicalSpecialityController extends Controller
     public function update(Request $request, MedicalSpeciality $medicalSpeciality)
     {
         $request->validate([
-            'name' => "bail|required|min:5|max:100|unique:medical_specialities,name,$medicalSpeciality->id|alpha|string"
+            'name' => "bail|required|min:5|max:100|unique:medical_specialities,name,$medicalSpeciality->id|alpha_spaces|string"
         ]);
         $medicalSpeciality->update($request->all());
         return redirect()->route('admin.medicalSpeciality.index');
@@ -121,9 +121,7 @@ class MedicalSpecialityController extends Controller
      */
     public function restore(int $id)
     {
-        MedicalSpeciality::withTrashed()
-            ->where('id', $id)
-            ->restore();
+        MedicalSpeciality::withTrashed()->where('id', $id)->restore();
         return redirect()->route('admin.medicalSpeciality.index');
     }
 }
