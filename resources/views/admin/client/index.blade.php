@@ -46,15 +46,10 @@
                             <td class="align-middle">{{ $user->identification }}</td>
                             <td class="align-middle">{{ $user->email }}</td>
                             <td class="align-middle">{{ $user->phone }}</td>
-                            <td class="align-middle">{{ $user->trashed() ? 'Desactivo' : 'Activo' }}</td>
+                            <td class="align-middle">{{ $user->isActiveClient() ? 'Activo' : 'Desactivo' }}</td>
                             <td class="align-middle col-action">
                                 <div class="d-flex flex-row justify-content-end align-items-center">
-                                    @if($user->trashed())
-                                        <button class="btn btn-primary"
-                                                onclick="toggleTableRow('user-'+{{ $user->id }}, 'restore')">
-                                            Activar
-                                        </button>
-                                    @else
+                                    @if($user->isActiveClient())
                                         <a href="{{ route('admin.client.show', $user) }}"
                                            class="btn btn-primary mr-1">Ver</a>
                                         <a href="{{ route('admin.client.edit', $user) }}"
@@ -62,6 +57,11 @@
                                         <button class="btn btn-danger"
                                                 onclick="toggleTableRow('user-'+{{ $user->id }}, 'destroy')">
                                             Eliminar
+                                        </button>
+                                    @else
+                                        <button class="btn btn-primary"
+                                                onclick="toggleTableRow('user-'+{{ $user->id }}, 'restore')">
+                                            Activar
                                         </button>
                                     @endif
                                 </div>

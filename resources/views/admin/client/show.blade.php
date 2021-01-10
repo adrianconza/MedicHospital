@@ -42,7 +42,8 @@
         <div class="form-group col-md-6 p-0">
             <label for="name">Género</label>
             <input id="name" type="text" disabled
-                   value="{{ $client->gender === 'M' ? 'Masculino' : 'Femenino'  }}" class="form-control">
+                   value="{{ isset($doctor->gender) ? $doctor->gender === 'M' ? 'Masculino' : 'Femenino' : '' }}"
+                   class="form-control">
         </div>
 
         <div class="form-group col-md-6 p-0">
