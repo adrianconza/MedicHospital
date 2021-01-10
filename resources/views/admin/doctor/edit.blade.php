@@ -8,7 +8,7 @@
             @csrf
 
             <div class="form-group col-md-6 p-0">
-                <label for="name">Nombre</label>
+                <label for="name">Nombre *</label>
                 <input id="name" name="name" type="text" required placeholder="Ingresa el nombre" autofocus
                        value="{{ old('name', $doctor->name) }}"
                        class="form-control @error('name') is-invalid @enderror" aria-describedby="validation-name">
@@ -18,7 +18,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="last_name">Apellido</label>
+                <label for="last_name">Apellido *</label>
                 <input id="last_name" name="last_name" type="text" required placeholder="Ingresa el apellido"
                        value="{{ old('last_name', $doctor->last_name) }}"
                        class="form-control @error('last_name') is-invalid @enderror"
@@ -29,7 +29,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="identification">Cédula</label>
+                <label for="identification">Cédula *</label>
                 <input id="identification" name="identification" type="text" required placeholder="Ingresa la cédula"
                        value="{{ old('identification', $doctor->identification) }}"
                        class="form-control @error('identification') is-invalid @enderror"
@@ -40,7 +40,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="email">Email</label>
+                <label for="email">Email *</label>
                 <input id="email" name="email" type="text" required placeholder="Ingresa el email"
                        value="{{ old('email', $doctor->email) }}"
                        class="form-control @error('email') is-invalid @enderror"
@@ -51,7 +51,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="phone">Teléfono</label>
+                <label for="phone">Teléfono *</label>
                 <input id="phone" name="phone" type="text" required placeholder="Ingresa el teléfono"
                        value="{{ old('phone', $doctor->phone) }}"
                        class="form-control @error('phone') is-invalid @enderror"
@@ -85,10 +85,10 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="gender">Genero</label>
+                <label for="gender">Género</label>
                 <select id="gender" name="gender" class="form-control @error('gender') is-invalid @enderror"
                         aria-describedby="validation-gender">
-                    <option value="{{ null }}">Selecciona el genero</option>
+                    <option value="{{ null }}">Selecciona el género</option>
                     <option value="M" {{ old('gender', $doctor->gender) === 'M' ? 'selected' : '' }}>Masculino
                     </option>
                     <option value="F" {{ old('gender', $doctor->gender) === 'F' ? 'selected' : '' }}>Femenino
@@ -100,18 +100,97 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="city_id">Ciudad</label>
+                <label for="city_id">Ciudad *</label>
                 <select id="city_id" name="city_id" class="form-control @error('city_id') is-invalid @enderror"
                         aria-describedby="validation-city">
                     <option value="">Selecciona la ciudad</option>
                     @foreach($cities as $city)
                         <option
-                            value="{{ $city->id }}" {{ old('city_id', $doctor->city_id) === $city->id ? 'selected' : '' }}>{{ $city->province->name }}
+                            value="{{ $city->id }}" {{ +old('city_id', $doctor->city_id) === +$city->id ? 'selected' : '' }}>{{ $city->province->name }}
                             , {{ $city->name }}</option>
                     @endforeach
                 </select>
                 @error('city_id')
                 <div id="validation-city" class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-6 p-0">
+                <label for="medical_speciality">Especialidades médicas *</label>
+                <div class="input-group">
+                    <select id="medical_speciality" class="form-control">
+                        <option value="">Selecciona la especialidad médica</option>
+                        @foreach($medicalSpecialities as $medicalSpeciality)
+                            <option value="{{ $medicalSpeciality->id }}">{{ $medicalSpeciality->name }}</option>
+                        @endforeach
+                    </select>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary"
+                                onclick="addSelectToRow('medical_speciality', 'medical_specialities', 'medical_specialities')">
+                            Añadir
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="medical_specialities" class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if(old('medical_specialities') === null && !$errors->has('medical_specialities'))
+                            @foreach($doctor->medicalSpecialities as $medicalSpeciality)
+                                <tr id="medical_specialities-{{$medicalSpeciality->id}}">
+                                    <td id="1" class="d-none">
+                                        <input name="medical_specialities[]" type="hidden"
+                                               value="{{$medicalSpeciality->id}}">
+                                    </td>
+                                    <td class="align-middle">
+                                        {{$medicalSpeciality->name}}
+                                    </td>
+                                    <td class="align-middle col-action">
+                                        <div class="d-flex flex-row justify-content-end align-items-center">
+                                            <button type="button" class="btn btn-danger"
+                                                    onclick="removeSelectToRow('medical_specialities', 'medical_specialities-{{$medicalSpeciality->id}}')">
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
+                        @if(old('medical_specialities'))
+                            @foreach(old('medical_specialities') as $medical_speciality)
+                                <tr id="medical_specialities-{{$medical_speciality}}">
+                                    <td id="2" class="d-none">
+                                        <input name="medical_specialities[]" type="hidden"
+                                               value="{{$medical_speciality}}">
+                                    </td>
+                                    <td class="align-middle">
+                                        @foreach($medicalSpecialities as $medicalSpeciality)
+                                            @if(+$medicalSpeciality->id === +$medical_speciality)
+                                                {{$medicalSpeciality->name}}
+                                            @endif
+                                        @endforeach
+                                    </td>
+                                    <td class="align-middle col-action">
+                                        <div class="d-flex flex-row justify-content-end align-items-center">
+                                            <button type="button" class="btn btn-danger"
+                                                    onclick="removeSelectToRow('medical_specialities', 'medical_specialities-{{$medical_speciality}}')">
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
+                        </tbody>
+                    </table>
+                </div>
+                @error('medical_specialities')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
             </div>
 

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AttentionSchedule;
 use App\Models\City;
 use App\Models\ImagingExam;
 use App\Models\LaboratoryExam;
@@ -21,6 +22,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        MedicalSpeciality::factory(50)->create();
+        LaboratoryExam::factory(50)->create();
+        ImagingExam::factory(50)->create();
+
         Province::factory(10)->create()->each(function ($province) {
             $province->cities()->saveMany(City::factory(5)->make());
         });
@@ -42,12 +47,21 @@ class DatabaseSeeder extends Seeder
             $patient->save();
         });
         $patients = Patient::all();
-        User::all()->each(function ($user) use ($patients) {
-            $user->patients()->attach($patients->random(rand(1, 5))->pluck('id')->toArray());
+        User::whereHas('roles', function ($q) {
+            $q->where('name', 'Client');
+        })->get()->each(function ($client) use ($patients) {
+            $client->patients()->attach($patients->random(rand(1, 5))->pluck('id')->toArray());
         });
 
-        MedicalSpeciality::factory(50)->create();
-        LaboratoryExam::factory(50)->create();
-        ImagingExam::factory(50)->create();
+        $medicalSpecialities = MedicalSpeciality::all();
+        User::whereHas('roles', function ($q) {
+            $q->where('name', 'Doctor');
+        })->get()->each(function ($doctor) use ($medicalSpecialities) {
+            $doctor->medicalSpecialities()->attach($medicalSpecialities->random(rand(1, 5))->pluck('id')->toArray());
+            $doctor->attentionSchedules()->saveMany([
+                new AttentionSchedule(['start_time' => '09:00', 'end_time' => '12:00']),
+                new AttentionSchedule(['start_time' => '16:00', 'end_time' => '18:00'])
+            ]);
+        });
     }
 }

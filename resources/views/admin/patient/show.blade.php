@@ -40,7 +40,7 @@
         </div>
 
         <div class="form-group col-md-6 p-0">
-            <label for="name">Genero</label>
+            <label for="name">Género</label>
             <input id="name" type="text" disabled
                    value="{{ $patient->gender === 'M' ? 'Masculino' : 'Femenino'  }}" class="form-control">
         </div>

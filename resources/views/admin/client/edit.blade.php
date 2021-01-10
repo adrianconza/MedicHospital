@@ -85,10 +85,10 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="gender">Genero</label>
+                <label for="gender">Género</label>
                 <select id="gender" name="gender" class="form-control @error('gender') is-invalid @enderror"
                         aria-describedby="validation-gender">
-                    <option value="{{ null }}">Selecciona el genero</option>
+                    <option value="{{ null }}">Selecciona el género</option>
                     <option value="M" {{ old('gender', $client->gender) === 'M' ? 'selected' : '' }}>Masculino
                     </option>
                     <option value="F" {{ old('gender', $client->gender) === 'F' ? 'selected' : '' }}>Femenino

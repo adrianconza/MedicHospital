@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class AdministratorController extends Controller
 {
-    private $role = 'Administrador';
+    private $role = 'Administrator';
 
     /**
      * Create a new controller instance.
@@ -52,8 +52,7 @@ class AdministratorController extends Controller
      */
     public function create()
     {
-        $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
-            ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
+        $cities = City::citiesAndProvinces();
         return view('admin.administrator.create', compact('cities'));
     }
 
@@ -122,8 +121,7 @@ class AdministratorController extends Controller
             return redirect()->route('admin.administrator.index');
         }
 
-        $cities = City::query()->join('provinces', 'provinces.id', '=', 'cities.province_id')
-            ->orderBy('provinces.name')->orderBy('cities.name')->select('cities.*')->get();
+        $cities = City::citiesAndProvinces();
         return view('admin.administrator.edit', compact('administrator', 'cities'));
     }
 
