@@ -8,7 +8,7 @@
             @csrf
 
             <div class="form-group col-md-6 p-0">
-                <label for="name">Nombre</label>
+                <label for="name">Nombre *</label>
                 <input id="name" name="name" type="text" required placeholder="Ingresa el nombre" autofocus
                        value="{{ old('name', $imagingExam->name) }}"
                        class="form-control @error('name') is-invalid @enderror" aria-describedby="validation-name">
