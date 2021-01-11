@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Appointment;
 use App\Models\AttentionSchedule;
 use App\Models\City;
 use App\Models\ImagingExam;
@@ -54,14 +55,22 @@ class DatabaseSeeder extends Seeder
         });
 
         $medicalSpecialities = MedicalSpeciality::all();
-        User::whereHas('roles', function ($q) {
+        $doctors = User::whereHas('roles', function ($q) {
             $q->where('name', 'Doctor');
-        })->get()->each(function ($doctor) use ($medicalSpecialities) {
+        })->get();
+        $doctors->each(function ($doctor) use ($medicalSpecialities) {
             $doctor->medicalSpecialities()->attach($medicalSpecialities->random(rand(1, 5))->pluck('id')->toArray());
             $doctor->attentionSchedules()->saveMany([
                 new AttentionSchedule(['start_time' => '09:00', 'end_time' => '12:00']),
                 new AttentionSchedule(['start_time' => '16:00', 'end_time' => '18:00'])
             ]);
+        });
+
+        Appointment::factory(50)->make()->each(function ($user) use ($patients, $medicalSpecialities, $doctors) {
+            $user->patient()->associate($patients->random(1)->first());
+            $user->medicalSpeciality()->associate($medicalSpecialities->random(1)->first());
+            $user->user()->associate($doctors->random(1)->first());
+            $user->save();
         });
     }
 }

@@ -44,3 +44,23 @@ window.addSelectToRow = (selectId, tableId, varName) => {
 window.removeSelectToRow = (tableId, rowId) => {
     $(`#${tableId} tbody #${rowId}`).remove();
 };
+
+$('#scheduleModal').on('show.bs.modal', function (event) {
+    const button = $(event.relatedTarget);
+    const startTime = button.data('start-time');
+    const endTime = button.data('end-time');
+    const medicalSpecialityId = button.data('medical-speciality-id');
+    const medicalSpeciality = button.data('medical-speciality');
+    const doctorId = button.data('doctor-id');
+    const doctor = button.data('doctor');
+
+    const modal = $(this);
+    modal.find('.modal-body #start_time').val(startTime);
+    modal.find('.modal-body #start_time_show').val(startTime);
+    modal.find('.modal-body #end_time').val(endTime);
+    modal.find('.modal-body #end_time_show').val(endTime);
+    modal.find('.modal-body #medical_speciality').val(medicalSpecialityId);
+    modal.find('.modal-body #medical_speciality_show').val(medicalSpeciality);
+    modal.find('.modal-body #doctor').val(doctorId);
+    modal.find('.modal-body #doctor_show').val(doctor);
+})

@@ -57,4 +57,12 @@ class Patient extends Model
     {
         return $this->belongsTo(City::class);
     }
+
+    /**
+     * Get the appointments for the patient.
+     */
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }

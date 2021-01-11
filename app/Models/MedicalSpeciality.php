@@ -32,10 +32,18 @@ class MedicalSpeciality extends Model
     ];
 
     /**
-     * Get the users for the medical speciality.
+     * Get the doctors for the medical speciality.
      */
     public function users()
     {
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    /**
+     * Get the appointments for the medical speciality.
+     */
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
 }

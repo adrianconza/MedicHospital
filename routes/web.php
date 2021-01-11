@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdministratorController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
@@ -48,3 +49,5 @@ Route::put('laboratory-exam/{id}/restore', [LaboratoryExamController::class, 're
 
 Route::resource('imaging-exam', ImagingExamController::class)->names('admin.imagingExam');
 Route::put('imaging-exam/{id}/restore', [ImagingExamController::class, 'restore'])->name('admin.imagingExam.restore');
+
+Route::resource('appointment', AppointmentController::class)->except(['edit', 'update'])->names('admin.appointment');
