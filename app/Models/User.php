@@ -177,4 +177,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(AttentionSchedule::class);
     }
+
+    /**
+     * Get the appointments for the doctor.
+     */
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }
