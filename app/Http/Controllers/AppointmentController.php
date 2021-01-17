@@ -3,21 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
-use App\Models\AttentionSchedule;
-use App\Models\City;
 use App\Models\MedicalSpeciality;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
 use DateInterval;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Exception;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class AppointmentController extends Controller
 {
