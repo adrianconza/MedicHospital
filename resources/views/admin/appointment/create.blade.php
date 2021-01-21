@@ -23,6 +23,19 @@
                 </select>
             </div>
 
+            <div class="form-group col-md-6 p-0">
+                <label for="doctor">Médico</label>
+                <select id="doctor" name="doctor" class="form-control">
+                    <option value="">Selecciona un médico</option>
+                    @if($doctors)
+                        @foreach($doctors as $doctor)
+                            <option
+                                value="{{ $doctor->id }}" {{ +$doctorId === +$doctor->id ? 'selected' : '' }}>{{ $doctor->name }} {{ $doctor->last_name }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+
             <div class="pt-3">
                 <a href="{{ route('admin.appointment.index') }}" class="btn btn-secondary">
                     <span>Cancelar</span>
@@ -45,7 +58,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @if(isset($appointments))
+                @if(count($appointments) > 0)
                     @foreach($appointments as $appointment)
                         <tr>
                             <td class="align-middle">{{ $appointment->start_time }}</td>
