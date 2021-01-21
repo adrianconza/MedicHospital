@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Nicolaslopezj\Searchable\SearchableTrait;
 
 class User extends Authenticatable
@@ -184,5 +185,24 @@ class User extends Authenticatable
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    /**
+     * Get all active doctors and have the medical speciality.
+     *
+     * @param int $medicalSpecialityId
+     * @return array
+     */
+    public static function doctorsByMedicalSpeciality(int $medicalSpecialityId)
+    {
+        return DB::select('select u.id, u.name, u.last_name
+                from users u
+                inner join role_user ru on u.id = ru.user_id
+                inner join roles r on ru.role_id = r.id
+                inner join medical_speciality_user msu on u.id = msu.user_id
+                inner join medical_specialities ms on msu.medical_speciality_id = ms.id
+                where r.name = :role and ru.deleted_at is null and ms.id = :medical_speciality_id
+                order by u.name, u.last_name',
+            ['role' => Role::DOCTOR, 'medical_speciality_id' => $medicalSpecialityId]);
     }
 }

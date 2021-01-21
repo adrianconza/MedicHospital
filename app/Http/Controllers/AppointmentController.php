@@ -3,26 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
-use App\Models\AttentionSchedule;
-use App\Models\City;
 use App\Models\MedicalSpeciality;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
-use DateInterval;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Exception;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class AppointmentController extends Controller
 {
-
-    private $appointmentTime = 30;
 
     /**
      * Create a new controller instance.
@@ -39,10 +31,26 @@ class AppointmentController extends Controller
      *
      * @return View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $appointments = Appointment::where('start_time', '>=', Carbon::now())->orderBy('start_time')->paginate(10);
-        return view('admin.appointment.index', compact('appointments'));
+        $doctorSearch = $request->get('doctor_search');
+        $patientSearch = $request->get('patient_search');
+        $appointments = null;
+        if ($request->has('doctor_search') && $doctorSearch !== null) {
+            $appointments = Appointment::where('start_time', '>=', Carbon::now())->where('user_id', $doctorSearch)->orderBy('start_time')->paginate(10);
+        }
+        if ($request->has('patient_search') && $patientSearch !== null) {
+            $appointments = Appointment::where('start_time', '>=', Carbon::now())->where('patient_id', $patientSearch)->orderBy('start_time')->paginate(10);
+        }
+        if (!$appointments) {
+            $appointments = Appointment::where('start_time', '>=', Carbon::now())->orderBy('start_time')->paginate(10);
+        }
+
+        $patients = Patient::orderBy('name')->get();
+        $doctors = User::whereHas('roles', function ($q) {
+            $q->where('name', Role::DOCTOR);
+        })->orderBy('name')->get();
+        return view('admin.appointment.index', compact('patients', 'doctors', 'appointments', 'doctorSearch', 'patientSearch'));
     }
 
     /**
@@ -50,87 +58,33 @@ class AppointmentController extends Controller
      *
      * @param Request $request
      * @return View
+     * @throws Exception
      */
     public function create(Request $request)
     {
         $dayAppointment = $request->get('day_appointment');
         $medicalSpecialityId = $request->get('medical_speciality');
+        $doctorId = $request->get('doctor');
         $appointments = null;
         $patients = null;
+        $doctors = null;
 
         if ($request->has('day_appointment') && $dayAppointment !== null && $request->has('medical_speciality') && $medicalSpecialityId !== null) {
             $medicalSpeciality = MedicalSpeciality::find($medicalSpecialityId);
-            $dateAppointment = new Carbon($dayAppointment);
+            $doctors = User::doctorsByMedicalSpeciality($medicalSpeciality->id);
 
-            $doctors = DB::select('select u.id
-                from users u
-                inner join role_user ru on u.id = ru.user_id
-                inner join roles r on ru.role_id = r.id
-                inner join medical_speciality_user msu on u.id = msu.user_id
-                inner join medical_specialities ms on msu.medical_speciality_id = ms.id
-                where r.name = :role and ru.deleted_at is null and ms.id = :medical_speciality_id',
-                ['role' => Role::DOCTOR, 'medical_speciality_id' => $medicalSpeciality->id]);
-            foreach ($doctors as $clave => $valor) {
-                $doctor = User::find($valor->id);
-
-                $startDay = $dateAppointment->startOfDay()->toDateTimeString();
-                $endDay = $dateAppointment->endOfDay()->toDateTimeString();
-                $doctorAppointments = DB::select('select a.start_time, a.end_time
-                    from appointments a
-                    inner join users u on u.id = a.user_id
-                    where a.deleted_at is null and u.id = :user_id and a.start_time >= :start_day and a.start_time <= :end_day
-                    order by start_time',
-                    ['user_id' => $doctor->id, 'start_day' => $startDay, 'end_day' => $endDay]);
-
-                foreach ($doctor->attentionSchedules as $attentionSchedule) {
-                    $startTime = new Carbon($attentionSchedule->start_time);
-                    $startTime->year = $dateAppointment->year;
-                    $startTime->month = $dateAppointment->month;
-                    $startTime->day = $dateAppointment->day;
-                    $endTime = new Carbon($attentionSchedule->end_time);
-                    $endTime->year = $dateAppointment->year;
-                    $endTime->month = $dateAppointment->month;
-                    $endTime->day = $dateAppointment->day;
-                    $diffInMinutes = $startTime->diffInMinutes($endTime);
-                    for ($i = 0; $i < $diffInMinutes / $this->appointmentTime; $i++) {
-                        $minutesAdd = $this->appointmentTime * $i;
-                        $newAppointmentStartTime = $startTime->copy()->add(new DateInterval("PT{$minutesAdd}M"));
-                        $newAppointmentEndTime = $newAppointmentStartTime->copy()->add(new DateInterval("PT{$this->appointmentTime}M"));
-
-                        $existAppointment = false;
-                        foreach ($doctorAppointments as $doctorAppointmentClave => $doctorAppointmentValor) {
-                            $appointmentStartTime = new Carbon($doctorAppointmentValor->start_time);
-                            $appointmentEndTime = new Carbon($doctorAppointmentValor->end_time);
-                            if ($appointmentStartTime->eq($newAppointmentStartTime) && $appointmentEndTime->eq($newAppointmentEndTime)) {
-                                $existAppointment = true;
-                                break;
-                            }
-                        }
-
-                        if (!$existAppointment && $newAppointmentStartTime->gte(Carbon::now())) {
-                            $appointments[] = (object)[
-                                'start_time' => $newAppointmentStartTime,
-                                'end_time' => $newAppointmentEndTime,
-                                'duration' => $this->appointmentTime,
-                                'doctor_id' => $doctor->id,
-                                'doctor' => "{$doctor->name} {$doctor->last_name}",
-                                'medical_speciality_id' => $medicalSpeciality->id,
-                                'medical_speciality' => $medicalSpeciality->name,
-                            ];
-                        }
-                    }
-                }
-            }
-            if ($appointments) {
-                array_multisort(array_column($appointments, 'start_time'), SORT_ASC,
-                    array_column($appointments, 'doctor'), SORT_ASC,
-                    $appointments);
-                $patients = Patient::all();
+            if ($doctorId) {
+                $appointments = Appointment::generateDoctorAppointments($dayAppointment, $doctorId, $medicalSpeciality);
+            } else {
+                $appointments = Appointment::generateAppointments($dayAppointment, $medicalSpeciality);
             }
         }
 
+        if ($appointments) {
+            $patients = Patient::all();
+        }
         $medicalSpecialities = MedicalSpeciality::orderBy('name')->get();
-        return view('admin.appointment.create', compact('medicalSpecialities', 'dayAppointment', 'medicalSpecialityId', 'appointments', 'patients'));
+        return view('admin.appointment.create', compact('medicalSpecialities', 'dayAppointment', 'medicalSpecialityId', 'doctors', 'doctorId', 'appointments', 'patients'));
     }
 
     /**
@@ -156,7 +110,7 @@ class AppointmentController extends Controller
         $appointment->fill($request->all());
         $duration = Carbon::now();
         $duration->hour = 0;
-        $duration->minute = $this->appointmentTime;
+        $duration->minute = Appointment::TIME;
         $duration->second = 0;
         $appointment->duration = $duration;
         $appointment->patient()->associate($patient);

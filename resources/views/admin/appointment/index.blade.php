@@ -11,6 +11,35 @@
             </div>
         </div>
 
+        <form method="GET" action="{{ route('admin.appointment.index') }}" class="p-0 pb-5">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="doctor_search">Médico</label>
+                    <select id="doctor_search" name="doctor_search" class="form-control">
+                        <option value="">Selecciona un médico</option>
+                        @foreach($doctors as $doctor)
+                            <option
+                                value="{{ $doctor->id }}" {{ +$doctorSearch === +$doctor->id ? 'selected' : '' }}>{{ $doctor->name }} {{ $doctor->last_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="patient_search">Paciente</label>
+                    <select id="patient_search" name="patient_search" class="form-control">
+                        <option value="">Selecciona un paciente</option>
+                        @foreach($patients as $patient)
+                            <option
+                                value="{{ $patient->id }}" {{ +$patientSearch === +$patient->id ? 'selected' : '' }}>{{ $patient->name }} {{ $patient->last_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-outline-primary">Buscar</button>
+            <a href="{{ route('admin.appointment.index') }}" class="btn btn-outline-danger">
+                <span>Limpiar filtros</span>
+            </a>
+        </form>
+
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
