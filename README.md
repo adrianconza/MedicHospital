@@ -16,9 +16,22 @@ Hospital management system, using laravel and mysql.
 > DB_PASSWORD=
 > ```
 
+## ⚙️ Installation
+
+```bash
+# install dependencies
+$ composer install
+
+# install npm dependencies
+$ npm run install
+```
+
 ## 🚀 Running with laravel server
 ```bash
 $ php artisan serve
+
+# generate build of css and js
+$ npm run dev
 ```
  
 ## 📑 Migrations
