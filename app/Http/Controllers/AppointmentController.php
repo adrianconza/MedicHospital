@@ -24,11 +24,13 @@ class AppointmentController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('administrator');
     }
 
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return View
      */
     public function index(Request $request)
