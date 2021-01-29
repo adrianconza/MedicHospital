@@ -46,32 +46,62 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarUser">
-                                <a class="dropdown-item" href="{{ route('admin.administrator.index') }}">
-                                    Administradores
-                                </a>
-                                <a class="dropdown-item" href="{{ route('admin.doctor.index') }}">
-                                    Doctores
-                                </a>
-                                <a class="dropdown-item" href="{{ route('admin.client.index') }}">
-                                    Clientes
-                                </a>
-                                <a class="dropdown-item" href="{{ route('admin.patient.index') }}">
-                                    Pacientes
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('admin.medicalSpeciality.index') }}">
-                                    Especialidades médicas
-                                </a>
-                                <a class="dropdown-item" href="{{ route('admin.laboratoryExam.index') }}">
-                                    Exámenes de laboratorio
-                                </a>
-                                <a class="dropdown-item" href="{{ route('admin.imagingExam.index') }}">
-                                    Exámenes de imagen
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('admin.appointment.index') }}">
-                                    Citas médicas
-                                </a>
+                                @if (Auth::user()->isActiveAdministrator())
+                                    @if (Auth::user()->isActiveDoctor() || Auth::user()->isActiveClient())
+                                        <a class="dropdown-item disabled font-weight-bold text-primary" href="#">Administrador</a>
+                                        <div class="dropdown-divider"></div>
+                                    @endif
+                                    <a class="dropdown-item" href="{{ route('admin.administrator.index') }}">
+                                        Administradores
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.doctor.index') }}">
+                                        Doctores
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.client.index') }}">
+                                        Clientes
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.patient.index') }}">
+                                        Pacientes
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ route('admin.medicalSpeciality.index') }}">
+                                        Especialidades médicas
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.laboratoryExam.index') }}">
+                                        Exámenes de laboratorio
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.imagingExam.index') }}">
+                                        Exámenes de imagen
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ route('admin.appointment.index') }}">
+                                        Citas médicas
+                                    </a>
+                                @endif
+                                @if (Auth::user()->isActiveDoctor())
+                                    @if (Auth::user()->isActiveAdministrator() || Auth::user()->isActiveClient())
+                                        @if (Auth::user()->isActiveAdministrator())
+                                            <div class="dropdown-divider"></div>
+                                        @endif
+                                        <a class="dropdown-item disabled font-weight-bold text-primary"
+                                           href="#">Doctor</a>
+                                        <div class="dropdown-divider"></div>
+                                    @endif
+                                    <a class="dropdown-item" href="{{ route('admin.appointment.index') }}">
+                                        Citas médicas 2
+                                    </a>
+                                @endif
+                                @if (Auth::user()->isActiveClient())
+                                    @if (Auth::user()->isActiveAdministrator() || Auth::user()->isActiveDoctor())
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item disabled font-weight-bold text-primary"
+                                           href="#">Cliente</a>
+                                        <div class="dropdown-divider"></div>
+                                    @endif
+                                    <a class="dropdown-item" href="{{ route('admin.appointment.index') }}">
+                                        Citas médicas 3
+                                    </a>
+                                @endif
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
