@@ -87,8 +87,8 @@
                                            href="#">Doctor</a>
                                         <div class="dropdown-divider"></div>
                                     @endif
-                                    <a class="dropdown-item" href="{{ route('admin.appointment.index') }}">
-                                        Citas médicas 2
+                                    <a class="dropdown-item" href="{{ route('doctor.schedule.index') }}">
+                                        Agenda
                                     </a>
                                 @endif
                                 @if (Auth::user()->isActiveClient())
