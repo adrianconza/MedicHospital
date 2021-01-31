@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="text-primary pb-3">Añadir un exámen de laboratorio</h1>
+        <h1 class="text-primary pb-3">Añadir un examen de laboratorio</h1>
         <form action="{{ route('admin.laboratoryExam.store') }}" method="POST" class="form">
             @csrf
 

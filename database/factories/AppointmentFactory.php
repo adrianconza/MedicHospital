@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Appointment;
-use DateInterval;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AppointmentFactory extends Factory
@@ -22,12 +22,12 @@ class AppointmentFactory extends Factory
      */
     public function definition()
     {
-        $startTime = $this->faker->dateTimeBetween('now', '+1 month');
-        $endTime = (clone $startTime)->add(new DateInterval('PT30M'));
+        $startTime = new Carbon($this->faker->dateTimeBetween('now', '+1 month'));
+        $endTime = $startTime->copy()->addMinutes(Appointment::TIME);
         return [
             'start_time' => $startTime,
             'end_time' => $endTime,
-            'duration' => '00:30',
+            'duration' => '00:' . Appointment::TIME,
             'reason' => $this->faker->text,
         ];
     }

@@ -2,8 +2,24 @@
 
 @section('content')
     <div class="container">
-        <h1 class="text-primary pb-3">Añadir una cita médica</h1>
-        <form action="{{ route('admin.appointment.create') }}" method="GET" class="form">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-4">
+            <div>
+                <h1 class="text-primary">Nueva cita médica</h1>
+                <span
+                    class="text-info h3">Paciente: {{ $patient->name }} {{ $patient->last_name }}</span>
+            </div>
+            <div class="pt-3 pt-md-0">
+                <a href="{{ route('doctor.medicalRecord.index', ['appointment' => $appointmentId]) }}"
+                   class="btn btn-secondary">
+                    <span>Regresar</span>
+                </a>
+            </div>
+        </div>
+
+        <form action="{{ route('doctor.nextAppointment.create') }}" method="GET" class="form">
+            <input id="appointment" name="appointment" type="hidden" value="{{ $appointmentId }}">
+            <input id="patient" name="patient" type="hidden" value="{{ $patient->id }}">
+
             <div class="form-group col-md-6 p-0">
                 <label for="day_appointment">Fecha *</label>
                 <input id="day_appointment" name="day_appointment" type="text" placeholder="Ingresa la fecha"
@@ -37,9 +53,6 @@
             </div>
 
             <div class="pt-3">
-                <a href="{{ route('admin.appointment.index') }}" class="btn btn-secondary">
-                    <span>Cancelar</span>
-                </a>
                 <button type="submit" class="btn btn-primary">
                     <span>Buscar</span>
                 </button>
@@ -99,8 +112,11 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form action="{{ route('admin.appointment.store') }}" method="POST" class="form">
+                    <form action="{{ route('doctor.nextAppointment.store') }}" method="POST" class="form">
                         @csrf
+
+                        <input id="appointment" name="appointment" type="hidden" value="{{ $appointmentId }}">
+                        <input id="patient" name="patient" type="hidden" value="{{ $patient->id }}">
 
                         <div class="modal-body">
                             <div class="form-group">
@@ -125,24 +141,6 @@
                                 <label for="doctor_show">Médico</label>
                                 <input id="doctor_show" type="text" disabled class="form-control">
                                 <input id="doctor" name="doctor" type="hidden">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="patient">Paciente *</label>
-                                <select id="patient" name="patient"
-                                        class="form-control @error('medical_speciality') is-invalid @enderror"
-                                        aria-describedby="validation-city">
-                                    <option value="">Selecciona el paciente</option>
-                                    @if(isset($patients))
-                                        @foreach($patients as $patient)
-                                            <option
-                                                value="{{ $patient->id }}" {{ +old('patient') === +$patient->id ? 'selected' : '' }}>{{ $patient->name }} {{ $patient->last_name }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                                @error('patient')
-                                <div id="validation-city" class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="form-group">

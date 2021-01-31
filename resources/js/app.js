@@ -41,6 +41,61 @@ window.addSelectToRow = (selectId, tableId, varName) => {
     `);
 };
 
+window.addRecipeToRow = () => {
+    const medicine = $('#medicine');
+    const medicineId = medicine.val();
+    const medicineLabel = $('#medicine option:selected').text();
+
+    const amount = $('#amount');
+    const amountValue = amount.val();
+
+    const unit = $('#unit');
+    const unitId = unit.val();
+    const unitLabel = $('#unit option:selected').text();
+
+    const prescription = $('#prescription');
+    const prescriptionValue = prescription.val();
+
+    const ids = $('#medicines tbody tr input[name="medicines[]"]').map((_, e) => e.value).get();
+    const exist = ids.find(id => +id === +medicineId || id === medicineId);
+
+    if (!medicineId || !unitId || !amountValue || !prescriptionValue) {
+        return;
+    }
+
+    medicine.val('');
+    amount.val('');
+    unit.val('');
+    prescription.val('');
+
+    if (exist) {
+        return;
+    }
+
+    $('#medicines tbody').append(`
+        <tr id="medicines-${medicineId}">
+            <td class="d-none">
+                <input name="amounts[]" type="hidden" value="${amountValue}">
+                <input name="units[]" type="hidden" value="${unitId}">
+                <input name="medicines[]" type="hidden" value="${medicineId}">
+                <input name="prescriptions[]" type="hidden" value="${prescriptionValue}">
+            </td>
+            <td class="align-middle">${amountValue}</td>
+            <td class="align-middle">${unitLabel}</td>
+            <td class="align-middle">${medicineLabel}</td>
+            <td class="align-middle">${prescriptionValue}</td>
+            <td class="align-middle col-action">
+                <div class="d-flex flex-row justify-content-end align-items-center">
+                    <button type="button" class="btn btn-danger"
+                            onclick="removeSelectToRow('medicines', 'medicines-${medicineId}')">
+                        Eliminar
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `);
+};
+
 window.removeSelectToRow = (tableId, rowId) => {
     $(`#${tableId} tbody #${rowId}`).remove();
 };

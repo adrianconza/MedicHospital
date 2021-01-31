@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="text-primary pb-3">Datos del exámen de imagen</h1>
+        <h1 class="text-primary pb-3">Datos del examen de imagen</h1>
 
         <div class="form-group col-md-6 p-0">
             <label for="name">Nombre</label>
