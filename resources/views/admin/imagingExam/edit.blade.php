@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="text-primary pb-3">Editar un exámen de imagen</h1>
+        <h1 class="text-primary pb-3">Editar un examen de imagen</h1>
         <form action="{{ route('admin.imagingExam.update', $imagingExam) }}" method="POST" class="form">
             @method('PUT')
             @csrf

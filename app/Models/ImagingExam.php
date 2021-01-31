@@ -30,4 +30,12 @@ class ImagingExam extends Model
             'imaging_exams.name' => 10,
         ]
     ];
+
+    /**
+     * Get the medical exams for the imaging exam.
+     */
+    public function medicalExams()
+    {
+        return $this->hasMany(MedicalExam::class);
+    }
 }

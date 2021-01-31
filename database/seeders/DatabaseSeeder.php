@@ -7,9 +7,13 @@ use App\Models\AttentionSchedule;
 use App\Models\City;
 use App\Models\ImagingExam;
 use App\Models\LaboratoryExam;
+use App\Models\MedicalExam;
+use App\Models\MedicalRecord;
 use App\Models\MedicalSpeciality;
+use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\Province;
+use App\Models\Recipe;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -26,6 +30,7 @@ class DatabaseSeeder extends Seeder
         MedicalSpeciality::factory(50)->create();
         LaboratoryExam::factory(50)->create();
         ImagingExam::factory(50)->create();
+        Medicine::factory(50)->create();
 
         Province::factory(10)->create()->each(function ($province) {
             $province->cities()->saveMany(City::factory(5)->make());
@@ -66,11 +71,34 @@ class DatabaseSeeder extends Seeder
             ]);
         });
 
-        Appointment::factory(50)->make()->each(function ($user) use ($patients, $medicalSpecialities, $doctors) {
-            $user->patient()->associate($patients->random(1)->first());
-            $user->medicalSpeciality()->associate($medicalSpecialities->random(1)->first());
-            $user->user()->associate($doctors->random(1)->first());
-            $user->save();
+        Appointment::factory(50)->make()->each(function ($appointment) use ($patients, $medicalSpecialities, $doctors) {
+            $appointment->patient()->associate($patients->random(1)->first());
+            $appointment->medicalSpeciality()->associate($medicalSpecialities->random(1)->first());
+            $appointment->user()->associate($doctors->random(1)->first());
+            $appointment->save();
+        });
+
+        $appointments = Appointment::all();
+        MedicalRecord::factory(100)->make()->each(function ($medicalRecord) use ($appointments) {
+            $medicalRecord->appointment()->associate($appointments->random(1)->first());
+            $medicalRecord->save();
+        });
+
+        $medicalRecords = MedicalRecord::all();
+        $medicines = Medicine::all();
+        Recipe::factory(100)->make()->each(function ($recipe) use ($medicines, $medicalRecords) {
+            $recipe->medicine()->associate($medicines->random(1)->first());
+            $recipe->medicalRecord()->associate($medicalRecords->random(1)->first());
+            $recipe->save();
+        });
+
+        $imagingExams = ImagingExam::all();
+        $laboratoryExams = LaboratoryExam::all();
+        MedicalExam::factory(100)->make()->each(function ($medicalExam) use ($imagingExams, $laboratoryExams, $medicalRecords) {
+            $medicalExam->imagingExam()->associate($imagingExams->random(1)->first());
+            $medicalExam->laboratoryExam()->associate($laboratoryExams->random(1)->first());
+            $medicalExam->medicalRecord()->associate($medicalRecords->random(1)->first());
+            $medicalExam->save();
         });
     }
 }

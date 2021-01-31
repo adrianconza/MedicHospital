@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use DateInterval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,7 +13,21 @@ class Appointment extends Model
 {
     use HasFactory, SoftDeletes;
 
+    /**
+     * The time of the appointment.
+     * This time is in minutes
+     *
+     * @var int
+     */
     const TIME = 30;
+
+    /**
+     * The extra time for input or view information.
+     * This time is in minutes
+     *
+     * @var int
+     */
+    const EXTRA_TIME = 30;
 
     /**
      * The attributes that are mass assignable.
@@ -52,6 +65,28 @@ class Appointment extends Model
     }
 
     /**
+     * Get the medical records for the appointment.
+     */
+    public function medicalRecords()
+    {
+        return $this->hasMany(MedicalRecord::class);
+    }
+
+    /**
+     * Validate that the appointment is the valid time.
+     *
+     * @return bool
+     */
+    public function validTime()
+    {
+        $startTime = new Carbon($this->start_time);
+        $endTime = new Carbon($this->end_time);
+        $appointmentStartTime = $startTime->copy()->subMinutes(Appointment::EXTRA_TIME);
+        $appointmentEndTime = $endTime->copy()->addMinutes(Appointment::EXTRA_TIME);
+        return $appointmentStartTime->lte(Carbon::now()) && $appointmentEndTime->gte(Carbon::now());
+    }
+
+    /**
      * Generate appointments for a doctor.
      *
      * @param string $dayAppointment
@@ -76,21 +111,21 @@ class Appointment extends Model
             ['user_id' => $doctor->id, 'start_day' => $startDay, 'end_day' => $endDay]);
         foreach ($doctor->attentionSchedules as $attentionSchedule) {
             $startTime = new Carbon($attentionSchedule->start_time);
-            $startTime->year = $dateAppointment->year;
-            $startTime->month = $dateAppointment->month;
             $startTime->day = $dateAppointment->day;
+            $startTime->month = $dateAppointment->month;
+            $startTime->year = $dateAppointment->year;
 
             $endTime = new Carbon($attentionSchedule->end_time);
-            $endTime->year = $dateAppointment->year;
-            $endTime->month = $dateAppointment->month;
             $endTime->day = $dateAppointment->day;
+            $endTime->month = $dateAppointment->month;
+            $endTime->year = $dateAppointment->year;
 
             $diffInMinutes = $startTime->diffInMinutes($endTime);
 
             for ($i = 0; $i < $diffInMinutes / Appointment::TIME; $i++) {
                 $minutesAdd = Appointment::TIME * $i;
-                $newAppointmentStartTime = $startTime->copy()->add(new DateInterval("PT{$minutesAdd}M"));
-                $newAppointmentEndTime = $newAppointmentStartTime->copy()->add(new DateInterval("PT" . Appointment::TIME . "M"));
+                $newAppointmentStartTime = $startTime->copy()->addMinutes($minutesAdd);
+                $newAppointmentEndTime = $newAppointmentStartTime->copy()->addMinutes(Appointment::TIME);
                 $existAppointment = false;
 
                 foreach ($doctorAppointments as $doctorAppointmentClave => $doctorAppointmentValor) {
