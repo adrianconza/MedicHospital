@@ -107,6 +107,9 @@
                                     <a class="dropdown-item" href="{{ route('client.myPatient.index') }}">
                                         Mis pacientes
                                     </a>
+                                    <a class="dropdown-item" href="{{ route('client.myAppointment.index') }}">
+                                        Mis citas médicas
+                                    </a>
                                 @endif
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item text-danger" href="{{ route('logout') }}"
