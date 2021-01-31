@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\MedicalSpeciality;
 use App\Models\Patient;
-use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -13,7 +12,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class AppointmentController extends Controller
+class NextAppointmentController extends Controller
 {
 
     /**
@@ -24,51 +23,33 @@ class AppointmentController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('administrator');
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     * @return View
-     */
-    public function index(Request $request)
-    {
-        $doctorSearch = $request->get('doctor_search');
-        $patientSearch = $request->get('patient_search');
-        $appointments = null;
-        if ($request->has('doctor_search') && $doctorSearch !== null) {
-            $appointments = Appointment::where('start_time', '>=', Carbon::now())->where('user_id', $doctorSearch)->orderBy('start_time')->paginate(10);
-        }
-        if ($request->has('patient_search') && $patientSearch !== null) {
-            $appointments = Appointment::where('start_time', '>=', Carbon::now())->where('patient_id', $patientSearch)->orderBy('start_time')->paginate(10);
-        }
-        if (!$appointments) {
-            $appointments = Appointment::where('start_time', '>=', Carbon::now())->orderBy('start_time')->paginate(10);
-        }
-
-        $patients = Patient::orderBy('name')->get();
-        $doctors = User::whereHas('roles', function ($q) {
-            $q->where('name', Role::DOCTOR);
-        })->orderBy('name')->get();
-        return view('admin.appointment.index', compact('patients', 'doctors', 'appointments', 'doctorSearch', 'patientSearch'));
+        $this->middleware('doctor');
     }
 
     /**
      * Show the form for creating a new resource.
      *
      * @param Request $request
-     * @return View
+     * @return View|RedirectResponse
      * @throws Exception
      */
     public function create(Request $request)
     {
+        $appointmentId = $request->get('appointment');
+        $patientId = $request->get('patient');
+        if (!$request->has('appointment') || $appointmentId === null || !$request->has('patient') || $patientId === null) {
+            return redirect()->route('doctor.schedule.index');
+        }
+
+        $appointment = Appointment::find($appointmentId);
+        if (!$appointment->validTime()) {
+            return redirect()->route('doctor.schedule.index');
+        }
+
         $dayAppointment = $request->has('day_appointment') && $request->get('day_appointment') ? $request->get('day_appointment') : date('Y-m-d');
         $medicalSpecialityId = $request->get('medical_speciality');
         $doctorId = $request->get('doctor');
         $appointments = null;
-        $patients = null;
         $doctors = null;
 
         $dateAppointment = new Carbon($dayAppointment);
@@ -76,7 +57,7 @@ class AppointmentController extends Controller
             $dayAppointment = date('Y-m-d');
         }
 
-        if ($request->has('day_appointment') && $request->has('medical_speciality') && $medicalSpecialityId !== null) {
+        if ($request->has('day_appointment') && $dayAppointment !== null && $request->has('medical_speciality') && $medicalSpecialityId !== null) {
             $medicalSpeciality = MedicalSpeciality::find($medicalSpecialityId);
             $doctors = User::doctorsByMedicalSpeciality($medicalSpeciality->id);
 
@@ -87,11 +68,9 @@ class AppointmentController extends Controller
             }
         }
 
-        if ($appointments) {
-            $patients = Patient::all();
-        }
+        $patient = Patient::find($patientId);
         $medicalSpecialities = MedicalSpeciality::orderBy('name')->get();
-        return view('admin.appointment.create', compact('medicalSpecialities', 'dayAppointment', 'medicalSpecialityId', 'doctors', 'doctorId', 'appointments', 'patients'));
+        return view('doctor.nextAppointment.create', compact('appointmentId', 'patient', 'medicalSpecialities', 'dayAppointment', 'medicalSpecialityId', 'doctors', 'doctorId', 'appointments'));
     }
 
     /**
@@ -102,6 +81,17 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
+        $appointmentId = $request->get('appointment');
+        $patientId = $request->get('patient');
+        if (!$request->has('appointment') || $appointmentId === null || !$request->has('patient') || $patientId === null) {
+            return redirect()->route('doctor.schedule.index');
+        }
+
+        $appointmentSchedule = Appointment::find($appointmentId);
+        if (!$appointmentSchedule->validTime()) {
+            return redirect()->route('doctor.schedule.index');
+        }
+
         $request->validate([
             'start_time' => 'bail|required|after:today|date',
             'end_time' => 'bail|required|after:start_date|date',
@@ -112,7 +102,7 @@ class AppointmentController extends Controller
         ]);
         $medicalSpeciality = MedicalSpeciality::find($request->medical_speciality);
         $doctor = User::find($request->doctor);
-        $patient = Patient::find($request->patient);
+        $patient = Patient::find($patientId);
         $appointment = new Appointment();
         $appointment->fill($request->all());
         $duration = Carbon::now();
@@ -124,34 +114,6 @@ class AppointmentController extends Controller
         $appointment->medicalSpeciality()->associate($medicalSpeciality);
         $appointment->user()->associate($doctor);
         $appointment->save();
-        return redirect()->route('admin.appointment.index');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param Appointment $appointment
-     * @return View
-     */
-    public function show(Appointment $appointment)
-    {
-        return view('admin.appointment.show', compact('appointment'));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Appointment $appointment
-     * @return RedirectResponse
-     * @throws Exception
-     */
-    public function destroy(Appointment $appointment)
-    {
-        if ((new Carbon($appointment->start_time))->lte(Carbon::now())) {
-            return redirect()->route('admin.appointment.index');
-        }
-
-        $appointment->delete();
-        return redirect()->route('admin.appointment.index');
+        return redirect()->route('doctor.medicalRecord.index', ['appointment' => $appointmentId]);
     }
 }

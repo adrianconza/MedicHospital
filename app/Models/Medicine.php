@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Nicolaslopezj\Searchable\SearchableTrait;
 
-class LaboratoryExam extends Model
+class Medicine extends Model
 {
     use HasFactory, SoftDeletes, SearchableTrait;
 
@@ -27,15 +27,15 @@ class LaboratoryExam extends Model
      */
     protected $searchable = [
         'columns' => [
-            'laboratory_exams.name' => 10,
+            'medicines.name' => 10,
         ]
     ];
 
     /**
-     * Get the medical exams for the laboratory exam.
+     * Get the recipes for the medicine.
      */
-    public function medicalExams()
+    public function recipes()
     {
-        return $this->hasMany(MedicalExam::class);
+        return $this->hasMany(Recipe::class);
     }
 }

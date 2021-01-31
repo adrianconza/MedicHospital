@@ -53,8 +53,8 @@
                             <td class="align-middle">{{ $appointment->medicalSpeciality->name }}</td>
                             <td class="align-middle col-action">
                                 <div class="d-flex flex-row justify-content-end align-items-center">
-                                    {{--                                    <a href="{{ route('doctor.schedule.show', $appointment) }}"--}}
-                                    {{--                                       class="btn btn-primary mr-1">Ver</a>--}}
+                                    <a href="{{ route('doctor.medicalRecord.index', ['appointment' => $appointment->id]) }}"
+                                       class="btn btn-primary mr-1">Ver</a>
                                 </div>
                             </td>
                         </tr>

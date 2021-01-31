@@ -12,6 +12,17 @@ use Illuminate\Support\Facades\Auth;
 class ScheduleController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('doctor');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @param Request $request
@@ -26,14 +37,19 @@ class ScheduleController extends Controller
             $daySearch = date('Y-m-d');
             $dateAppointment = new Carbon($daySearch);
         }
-        $startDay = $dateAppointment->startOfDay()->toDateTimeString();
-        $endDay = $dateAppointment->endOfDay()->toDateTimeString();
+        $now = Carbon::now();
+        $dateAppointment->micro = $now->micro;
+        $dateAppointment->second = $now->second;
+        $dateAppointment->minute = $now->minute;
+        $dateAppointment->hour = $now->hour;
+        $startDate = $dateAppointment->clone()->subMinutes(Appointment::EXTRA_TIME)->toDateTimeString();
+        $endDate = $dateAppointment->endOfDay()->toDateTimeString();
         $appointments = null;
         if ($request->has('patient_search') && $patientSearch !== null) {
-            $appointments = Appointment::where('start_time', '>=', $startDay)->where('start_time', '<=', $endDay)->where('user_id', Auth::id())->where('patient_id', $patientSearch)->orderBy('start_time')->paginate(10);
+            $appointments = Appointment::where('end_time', '>=', $startDate)->where('start_time', '<=', $endDate)->where('user_id', Auth::id())->where('patient_id', $patientSearch)->orderBy('start_time')->paginate(10);
         }
         if (!$appointments) {
-            $appointments = Appointment::where('start_time', '>=', $startDay)->where('start_time', '<=', $endDay)->where('user_id', Auth::id())->orderBy('start_time')->paginate(10);
+            $appointments = Appointment::where('end_time', '>=', $startDate)->where('start_time', '<=', $endDate)->where('user_id', Auth::id())->orderBy('start_time')->paginate(10);
         }
 
         $patients = Patient::orderBy('name')->get();
