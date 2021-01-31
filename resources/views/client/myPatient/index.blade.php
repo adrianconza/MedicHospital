@@ -52,6 +52,8 @@
                                     @if($patient->isActive(Auth::id()))
                                         <a href="{{ route('client.myPatient.show', $patient) }}"
                                            class="btn btn-primary mr-1">Ver</a>
+                                        <a href="{{ route('client.myMedicalRecord.index', ['patient' => $patient->id]) }}"
+                                           class="btn btn-primary mr-1">Historia médica</a>
                                         <a href="{{ route('client.myPatient.edit', $patient) }}"
                                            class="btn btn-primary mr-1">Editar</a>
                                         <button class="btn btn-danger"
@@ -59,6 +61,8 @@
                                             Eliminar
                                         </button>
                                     @else
+                                        <a href="{{ route('client.myMedicalRecord.index', $patient) }}"
+                                           class="btn btn-primary mr-1">Historia médica</a>
                                         <button class="btn btn-primary"
                                                 onclick="toggleTableRow('patient-'+{{ $patient->id }}, 'restore')">
                                             Activar

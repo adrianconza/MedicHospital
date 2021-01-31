@@ -2,9 +2,19 @@
 
 @section('content')
     <div class="container">
-        <h1 class="text-primary">Detalle de atención</h1>
-        <span
-            class="d-block text-info h3 pb-3">Paciente: {{ $medicalRecord->appointment->patient->name }} {{ $medicalRecord->appointment->patient->last_name }}</span>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-4">
+            <div>
+                <h1 class="text-primary">Detalle de atención</h1>
+                <span
+                    class="text-info h3">Paciente: {{ $patient->name }} {{ $patient->last_name }}</span>
+            </div>
+            <div class="pt-3 pt-md-0">
+                <a href="{{ route('client.myMedicalRecord.index', ['patient' => $patient->id]) }}"
+                   class="btn btn-primary">
+                    <span>Regresar</span>
+                </a>
+            </div>
+        </div>
 
         <div class="form-group col-md-6 p-0">
             <label for="date">Fecha</label>
@@ -115,13 +125,6 @@
             @else
                 <span class="d-block border-top pt-2 pb-3">No existe una receta.</span>
             @endif
-        </div>
-
-        <div class="pt-3">
-            <a href="{{ route('doctor.medicalRecord.index', ['appointment' => $appointment]) }}"
-               class="btn btn-primary">
-                <span>Regresar</span>
-            </a>
         </div>
     </div>
 @endsection
