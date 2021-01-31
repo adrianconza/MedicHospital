@@ -12,6 +12,7 @@ use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\MedicalSpecialityController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\MyAppointmentController;
+use App\Http\Controllers\MyMedicalRecordController;
 use App\Http\Controllers\MyPatientController;
 use App\Http\Controllers\NextAppointmentController;
 use App\Http\Controllers\PatientController;
@@ -78,3 +79,5 @@ Route::resource('my-patient', MyPatientController::class)->names('client.myPatie
 Route::put('my-patient/{id}/restore', [MyPatientController::class, 'restore'])->name('client.myPatient.restore');
 
 Route::resource('my-appointment', MyAppointmentController::class)->except(['edit', 'update', 'destroy'])->names('client.myAppointment');
+
+Route::resource('my-medical-record', MyMedicalRecordController::class)->only(['index', 'show'])->names('client.myMedicalRecord');
