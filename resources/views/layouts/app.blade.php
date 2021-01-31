@@ -104,12 +104,12 @@
                                            href="#">Cliente</a>
                                         <div class="dropdown-divider"></div>
                                     @endif
-                                    <a class="dropdown-item" href="{{ route('admin.appointment.index') }}">
-                                        Citas médicas 3
+                                    <a class="dropdown-item" href="{{ route('client.myPatient.index') }}">
+                                        Mis pacientes
                                     </a>
                                 @endif
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                <a class="dropdown-item text-danger" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                     Salir

@@ -65,4 +65,16 @@ class Patient extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+
+    /**
+     * Is active patient for the user.
+     *
+     * @param int $userId
+     * @return bool
+     */
+    public function isActive(int $userId)
+    {
+        $patient = $this->users()->wherePivot('user_id', $userId)->withPivot('deleted_at')->first();
+        return $patient ? $patient->pivot->deleted_at === null : false;
+    }
 }
