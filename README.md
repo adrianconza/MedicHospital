@@ -4,8 +4,10 @@
 Hospital management system, using laravel and mysql.
 
 > ### Note to run the application:
-> * You need to create a database
 > * Copy the `.env.example` file to `.env`
+> 
+> #### Data Base
+> * You need to create a database
 > * Configure the connection for the database
 > ```bash
 > DB_CONNECTION=
@@ -14,6 +16,20 @@ Hospital management system, using laravel and mysql.
 > DB_DATABASE=
 > DB_USERNAME=
 > DB_PASSWORD=
+> ```
+> 
+> #### Email
+> * To send emails you need to configure a mailing server, as a suggestion you can use sparkpost
+> * Configure the connection for the mailing server
+> ```bash
+> MAIL_MAILER=
+> MAIL_HOST=
+> MAIL_PORT=
+> MAIL_USERNAME=
+> MAIL_PASSWORD=
+> MAIL_ENCRYPTION=
+> MAIL_FROM_ADDRESS=
+> MAIL_FROM_NAME=
 > ```
 
 ## ⚙️ Installation
