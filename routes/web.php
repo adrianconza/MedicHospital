@@ -13,6 +13,7 @@ use App\Http\Controllers\MedicalSpecialityController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\NextAppointmentController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,9 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/login');
 
 Auth::routes();
+
+Route::get('/register', [RegisterController::class, 'create'])->name('auth.register');
+Route::post('/register', [RegisterController::class, 'store'])->name('auth.register.store');
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
