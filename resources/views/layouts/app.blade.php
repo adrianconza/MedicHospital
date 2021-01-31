@@ -80,6 +80,9 @@
                                     <a class="dropdown-item" href="{{ route('admin.appointment.index') }}">
                                         Citas médicas
                                     </a>
+                                    <a class="dropdown-item" href="{{ route('admin.medicalExam.index') }}">
+                                        Exámenes médicos
+                                    </a>
                                 @endif
                                 @if (Auth::user()->isActiveDoctor())
                                     @if (Auth::user()->isActiveAdministrator() || Auth::user()->isActiveClient())

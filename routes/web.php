@@ -7,6 +7,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImagingExamController;
 use App\Http\Controllers\LaboratoryExamController;
+use App\Http\Controllers\MedicalExamController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\MedicalSpecialityController;
 use App\Http\Controllers\MedicineController;
@@ -58,6 +59,8 @@ Route::resource('medicine', MedicineController::class)->names('admin.medicine');
 Route::put('medicine/{id}/restore', [MedicineController::class, 'restore'])->name('admin.medicine.restore');
 
 Route::resource('appointment', AppointmentController::class)->except(['edit', 'update'])->names('admin.appointment');
+
+Route::resource('medical-exam', MedicalExamController::class)->only(['index', 'edit', 'update'])->names('admin.medicalExam');
 
 Route::resource('schedule', ScheduleController::class)->only(['index'])->names('doctor.schedule');
 
