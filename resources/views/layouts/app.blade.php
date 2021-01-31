@@ -73,6 +73,9 @@
                                     <a class="dropdown-item" href="{{ route('admin.imagingExam.index') }}">
                                         Exámenes de imagen
                                     </a>
+                                    <a class="dropdown-item" href="{{ route('admin.medicine.index') }}">
+                                        Medicinas
+                                    </a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('admin.appointment.index') }}">
                                         Citas médicas
