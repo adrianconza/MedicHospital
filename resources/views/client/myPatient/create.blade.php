@@ -39,7 +39,7 @@
 
             <div class="form-group col-md-6 p-0">
                 <label for="email">Email</label>
-                <input id="email" name="email" type="text" required placeholder="Ingresa el email"
+                <input id="email" name="email" type="text" placeholder="Ingresa el email"
                        value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror"
                        aria-describedby="validation-email">
                 @error('email')
@@ -49,7 +49,7 @@
 
             <div class="form-group col-md-6 p-0">
                 <label for="phone">Teléfono</label>
-                <input id="phone" name="phone" type="text" required placeholder="Ingresa el teléfono"
+                <input id="phone" name="phone" type="text" placeholder="Ingresa el teléfono"
                        value="{{ old('phone') }}" class="form-control @error('phone') is-invalid @enderror"
                        aria-describedby="validation-phone">
                 @error('phone')

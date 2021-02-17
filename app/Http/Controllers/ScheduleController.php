@@ -37,11 +37,13 @@ class ScheduleController extends Controller
             $daySearch = date('Y-m-d');
             $dateAppointment = new Carbon($daySearch);
         }
-        $now = Carbon::now();
-        $dateAppointment->micro = $now->micro;
-        $dateAppointment->second = $now->second;
-        $dateAppointment->minute = $now->minute;
-        $dateAppointment->hour = $now->hour;
+        if ($dateAppointment->eq(Carbon::today())) {
+            $now = Carbon::now();
+            $dateAppointment->micro = $now->micro;
+            $dateAppointment->second = $now->second;
+            $dateAppointment->minute = $now->minute;
+            $dateAppointment->hour = $now->hour;
+        }
         $startDate = $dateAppointment->clone()->subMinutes(Appointment::EXTRA_TIME)->toDateTimeString();
         $endDate = $dateAppointment->endOfDay()->toDateTimeString();
         $appointments = null;
