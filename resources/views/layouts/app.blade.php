@@ -96,6 +96,9 @@
                                     <a class="dropdown-item" href="{{ route('doctor.schedule.index') }}">
                                         Agenda
                                     </a>
+                                    <a class="dropdown-item" href="{{ route('doctor.patientAttended.index') }}">
+                                        Historia médica
+                                    </a>
                                 @endif
                                 @if (Auth::user()->isActiveClient())
                                     @if (Auth::user()->isActiveAdministrator() || Auth::user()->isActiveDoctor())
