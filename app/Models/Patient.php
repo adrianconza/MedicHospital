@@ -43,14 +43,6 @@ class Patient extends Model
     ];
 
     /**
-     * Get the users for the patient.
-     */
-    public function users()
-    {
-        return $this->belongsToMany(User::class)->withTimestamps();
-    }
-
-    /**
      * Get the city for the patient.
      */
     public function city()
@@ -76,5 +68,13 @@ class Patient extends Model
     {
         $patient = $this->users()->wherePivot('user_id', $userId)->withPivot('deleted_at')->first();
         return $patient ? $patient->pivot->deleted_at === null : false;
+    }
+
+    /**
+     * Get the users for the patient.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 }

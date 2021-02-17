@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Carbon\Carbon;

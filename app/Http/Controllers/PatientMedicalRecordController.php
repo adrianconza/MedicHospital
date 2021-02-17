@@ -11,7 +11,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class MyMedicalRecordController extends Controller
+class PatientMedicalRecordController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -21,7 +21,7 @@ class MyMedicalRecordController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('client');
+        $this->middleware('doctor');
     }
 
     /**
@@ -35,14 +35,14 @@ class MyMedicalRecordController extends Controller
     {
         $patientId = $request->get('patient');
         if (!$request->has('patient') || $patientId === null) {
-            return redirect()->route('client.myPatient.index');
+            return redirect()->route('doctor.patientAttended.index');
         }
 
         $patient = Patient::find($patientId);
         $medicalRecords = MedicalRecord::whereHas('appointment', function ($q) use ($patientId) {
             $q->where('patient_id', $patientId);
         })->orderBy('created_at')->paginate(10);
-        return view('client.myMedicalRecord.index', compact('patient', 'medicalRecords'));
+        return view('doctor.patientMedicalRecord.index', compact('patient', 'medicalRecords'));
     }
 
     /**
@@ -56,13 +56,13 @@ class MyMedicalRecordController extends Controller
     {
         $patientId = $request->get('patient');
         if (!$request->has('patient') || $patientId === null) {
-            return redirect()->route('client.myPatient.index');
+            return redirect()->route('doctor.patientAttended.index');
         }
 
         $medicalRecord = MedicalRecord::find($id);
         $patient = Patient::find($patientId);
         $resultEnum = MedicalExam::RESULTS;
         $unitEnum = Recipe::UNITS;
-        return view('client.myMedicalRecord.show', compact('medicalRecord', 'patient', 'resultEnum', 'unitEnum'));
+        return view('doctor.patientMedicalRecord.show', compact('medicalRecord', 'patient', 'resultEnum', 'unitEnum'));
     }
 }

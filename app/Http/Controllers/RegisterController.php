@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\City;
+use App\Models\Patient;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
@@ -38,11 +39,12 @@ class RegisterController extends Controller
             'name' => 'bail|required|min:5|max:100|alpha_spaces|string',
             'last_name' => 'bail|required|min:5|max:100|alpha_spaces|string',
             'phone' => 'bail|required|digits:10|numeric',
-            'address' => 'bail|nullable|min:5|max:200|string',
-            'birthday' => 'bail|nullable|after:"1900-01-01"|before:today|date',
-            'gender' => 'bail|nullable|in:M,F',
+            'address' => 'bail|required|min:5|max:200|string',
+            'birthday' => 'bail|required|after:"1900-01-01"|before:today|date',
+            'gender' => 'bail|required|in:M,F',
             'city_id' => 'bail|required',
         ]);
+
         $city = City::find($request->city_id);
         $role = Role::client();
         $client = new User();
@@ -51,6 +53,13 @@ class RegisterController extends Controller
         $client->city()->associate($city);
         $client->save();
         $client->roles()->attach([$role->id]);
+
+        $patient = new Patient();
+        $patient->fill($request->all());
+        $patient->city()->associate($city);
+        $patient->save();
+        $patient->users()->attach($client->id);
+
         return redirect()->route('login');
     }
 }

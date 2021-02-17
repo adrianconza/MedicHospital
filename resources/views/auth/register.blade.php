@@ -75,8 +75,8 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="address">Dirección</label>
-                <input id="address" name="address" type="text" placeholder="Ingresa la dirección"
+                <label for="address">Dirección *</label>
+                <input id="address" name="address" type="text" required placeholder="Ingresa la dirección"
                        value="{{ old('address') }}" class="form-control @error('address') is-invalid @enderror"
                        aria-describedby="validation-address">
                 @error('address')
@@ -85,8 +85,8 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="birthday">Fecha de nacimiento</label>
-                <input id="birthday" name="birthday" type="text" placeholder="Ingresa la fecha de nacimiento"
+                <label for="birthday">Fecha de nacimiento *</label>
+                <input id="birthday" name="birthday" type="text" required placeholder="Ingresa la fecha de nacimiento"
                        value="{{ old('birthday') }}" class="form-control @error('birthday') is-invalid @enderror"
                        onfocus="(this.type='date')"
                        aria-describedby="validation-birthday">
@@ -96,7 +96,7 @@
             </div>
 
             <div class="form-group col-md-6 p-0">
-                <label for="gender">Género</label>
+                <label for="gender">Género *</label>
                 <select id="gender" name="gender" class="form-control @error('gender') is-invalid @enderror"
                         aria-describedby="validation-gender">
                     <option value="{{ null }}">Selecciona el género</option>

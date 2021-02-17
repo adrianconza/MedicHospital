@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\MedicalSpeciality;
 use App\Models\Patient;
-use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;

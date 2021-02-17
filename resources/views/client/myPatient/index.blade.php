@@ -61,7 +61,7 @@
                                             Eliminar
                                         </button>
                                     @else
-                                        <a href="{{ route('client.myMedicalRecord.index', $patient) }}"
+                                        <a href="{{ route('client.myMedicalRecord.index', ['patient' => $patient->id]) }}"
                                            class="btn btn-primary mr-1">Historia médica</a>
                                         <button class="btn btn-primary"
                                                 onclick="toggleTableRow('patient-'+{{ $patient->id }}, 'restore')">

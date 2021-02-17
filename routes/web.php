@@ -15,7 +15,9 @@ use App\Http\Controllers\MyAppointmentController;
 use App\Http\Controllers\MyMedicalRecordController;
 use App\Http\Controllers\MyPatientController;
 use App\Http\Controllers\NextAppointmentController;
+use App\Http\Controllers\PatientAttendedController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PatientMedicalRecordController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Auth;
@@ -74,6 +76,10 @@ Route::resource('schedule', ScheduleController::class)->only(['index'])->names('
 Route::resource('medical-record', MedicalRecordController::class)->except(['edit', 'update', 'destroy'])->names('doctor.medicalRecord');
 
 Route::resource('next-appointment', NextAppointmentController::class)->only(['create', 'store'])->names('doctor.nextAppointment');
+
+Route::resource('patient-attended', PatientAttendedController::class)->only(['index'])->names('doctor.patientAttended');
+
+Route::resource('patient-medical-record', PatientMedicalRecordController::class)->only(['index', 'show'])->names('doctor.patientMedicalRecord');
 
 Route::resource('my-patient', MyPatientController::class)->names('client.myPatient');
 Route::put('my-patient/{id}/restore', [MyPatientController::class, 'restore'])->name('client.myPatient.restore');
