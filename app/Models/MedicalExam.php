@@ -32,30 +32,6 @@ class MedicalExam extends Model
     ];
 
     /**
-     * Get the imaging exam for the medical exam.
-     */
-    public function imagingExam()
-    {
-        return $this->belongsTo(ImagingExam::class);
-    }
-
-    /**
-     * Get the laboratory exam for the medical exam.
-     */
-    public function laboratoryExam()
-    {
-        return $this->belongsTo(LaboratoryExam::class);
-    }
-
-    /**
-     * Get the medical record for the medical exam.
-     */
-    public function medicalRecord()
-    {
-        return $this->belongsTo(MedicalRecord::class);
-    }
-
-    /**
      * Get all medical exams without results.
      *
      * @param string|null $patient
@@ -99,5 +75,29 @@ class MedicalExam extends Model
                 left join imaging_exams ie on me.imaging_exam_id = ie.id
                 where me.result is null and mr.appointment_id = :appointmentId
                 order by mr.created_at", ['appointmentId' => $appointmentId]);
+    }
+
+    /**
+     * Get the imaging exam for the medical exam.
+     */
+    public function imagingExam()
+    {
+        return $this->belongsTo(ImagingExam::class);
+    }
+
+    /**
+     * Get the laboratory exam for the medical exam.
+     */
+    public function laboratoryExam()
+    {
+        return $this->belongsTo(LaboratoryExam::class);
+    }
+
+    /**
+     * Get the medical record for the medical exam.
+     */
+    public function medicalRecord()
+    {
+        return $this->belongsTo(MedicalRecord::class);
     }
 }

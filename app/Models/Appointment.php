@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
 class Appointment extends Model
 {
@@ -41,49 +41,32 @@ class Appointment extends Model
     ];
 
     /**
-     * Get the patient for the appointment.
-     */
-    public function patient()
-    {
-        return $this->belongsTo(Patient::class);
-    }
-
-    /**
-     * Get the medical speciality for the appointment.
-     */
-    public function medicalSpeciality()
-    {
-        return $this->belongsTo(MedicalSpeciality::class);
-    }
-
-    /**
-     * Get the doctor for the appointment.
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get the medical records for the appointment.
-     */
-    public function medicalRecords()
-    {
-        return $this->hasMany(MedicalRecord::class);
-    }
-
-    /**
-     * Validate that the appointment is the valid time.
+     * Generate appointments for all doctors.
      *
-     * @return bool
+     * @param string $dayAppointment
+     * @param MedicalSpeciality $medicalSpeciality
+     * @return array
+     * @throws Exception
      */
-    public function validTime()
+    public static function generateAppointments(string $dayAppointment, MedicalSpeciality $medicalSpeciality)
     {
-        $startTime = new Carbon($this->start_time);
-        $endTime = new Carbon($this->end_time);
-        $appointmentStartTime = $startTime->copy()->subMinutes(Appointment::EXTRA_TIME);
-        $appointmentEndTime = $endTime->copy()->addMinutes(Appointment::EXTRA_TIME);
-        return $appointmentStartTime->lte(Carbon::now()) && $appointmentEndTime->gte(Carbon::now());
+        $appointments = [];
+
+        $doctors = User::doctorsByMedicalSpeciality($medicalSpeciality->id);
+        foreach ($doctors as $clave => $valor) {
+            $doctorAppointments = Appointment::generateDoctorAppointments($dayAppointment, $valor->id, $medicalSpeciality);
+            if ($doctorAppointments) {
+                $appointments = array_merge($appointments, $doctorAppointments);
+            }
+        }
+
+        if ($appointments) {
+            array_multisort(array_column($appointments, 'start_time'), SORT_ASC,
+                array_column($appointments, 'doctor'), SORT_ASC,
+                $appointments);
+        }
+
+        return $appointments;
     }
 
     /**
@@ -159,31 +142,48 @@ class Appointment extends Model
     }
 
     /**
-     * Generate appointments for all doctors.
-     *
-     * @param string $dayAppointment
-     * @param MedicalSpeciality $medicalSpeciality
-     * @return array
-     * @throws Exception
+     * Get the patient for the appointment.
      */
-    public static function generateAppointments(string $dayAppointment, MedicalSpeciality $medicalSpeciality)
+    public function patient()
     {
-        $appointments = [];
+        return $this->belongsTo(Patient::class);
+    }
 
-        $doctors = User::doctorsByMedicalSpeciality($medicalSpeciality->id);
-        foreach ($doctors as $clave => $valor) {
-            $doctorAppointments = Appointment::generateDoctorAppointments($dayAppointment, $valor->id, $medicalSpeciality);
-            if ($doctorAppointments) {
-                $appointments = array_merge($appointments, $doctorAppointments);
-            }
-        }
+    /**
+     * Get the medical speciality for the appointment.
+     */
+    public function medicalSpeciality()
+    {
+        return $this->belongsTo(MedicalSpeciality::class);
+    }
 
-        if ($appointments) {
-            array_multisort(array_column($appointments, 'start_time'), SORT_ASC,
-                array_column($appointments, 'doctor'), SORT_ASC,
-                $appointments);
-        }
+    /**
+     * Get the doctor for the appointment.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
-        return $appointments;
+    /**
+     * Get the medical records for the appointment.
+     */
+    public function medicalRecords()
+    {
+        return $this->hasMany(MedicalRecord::class);
+    }
+
+    /**
+     * Validate that the appointment is the valid time.
+     *
+     * @return bool
+     */
+    public function validTime()
+    {
+        $startTime = new Carbon($this->start_time);
+        $endTime = new Carbon($this->end_time);
+        $appointmentStartTime = $startTime->copy()->subMinutes(Appointment::EXTRA_TIME);
+        $appointmentEndTime = $endTime->copy()->addMinutes(Appointment::EXTRA_TIME);
+        return $appointmentStartTime->lte(Carbon::now()) && $appointmentEndTime->gte(Carbon::now());
     }
 }
