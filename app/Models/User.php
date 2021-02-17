@@ -54,6 +54,24 @@ class User extends Authenticatable
         ]
     ];
 
+    /**
+     * Get all active doctors and have the medical speciality.
+     *
+     * @param int $medicalSpecialityId
+     * @return array
+     */
+    public static function doctorsByMedicalSpeciality(int $medicalSpecialityId)
+    {
+        return DB::select('select u.id, u.name, u.last_name
+                from users u
+                inner join role_user ru on u.id = ru.user_id
+                inner join roles r on ru.role_id = r.id
+                inner join medical_speciality_user msu on u.id = msu.user_id
+                inner join medical_specialities ms on msu.medical_speciality_id = ms.id
+                where r.name = :role and ru.deleted_at is null and ms.id = :medical_speciality_id
+                order by u.name, u.last_name',
+            ['role' => Role::DOCTOR, 'medical_speciality_id' => $medicalSpecialityId]);
+    }
 
     /**
      * Get the city for the user.
@@ -61,14 +79,6 @@ class User extends Authenticatable
     public function city()
     {
         return $this->belongsTo(City::class);
-    }
-
-    /**
-     * Get the roles for the user.
-     */
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
     /**
@@ -82,6 +92,26 @@ class User extends Authenticatable
     }
 
     /**
+     * Have rol for the user.
+     *
+     * @param Role $role
+     * @return bool
+     */
+    private function haveRol(Role $role)
+    {
+        $haveRole = $this->roles()->wherePivot('role_id', $role->id)->first();
+        return !!$haveRole;
+    }
+
+    /**
+     * Get the roles for the user.
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class)->withTimestamps();
+    }
+
+    /**
      * Have the active rol administrator for the user.
      *
      * @return bool
@@ -89,6 +119,18 @@ class User extends Authenticatable
     public function isActiveAdministrator()
     {
         return $this->isActiveRol(Role::administrator());
+    }
+
+    /**
+     * Have the active rol for the user.
+     *
+     * @param Role $role
+     * @return bool
+     */
+    private function isActiveRol(Role $role)
+    {
+        $validRole = $this->roles()->wherePivot('role_id', $role->id)->withPivot('deleted_at')->first();
+        return $validRole ? $validRole->pivot->deleted_at === null : false;
     }
 
     /**
@@ -132,30 +174,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Have rol for the user.
-     *
-     * @param Role $role
-     * @return bool
-     */
-    private function haveRol(Role $role)
-    {
-        $haveRole = $this->roles()->wherePivot('role_id', $role->id)->first();
-        return !!$haveRole;
-    }
-
-    /**
-     * Have the active rol for the user.
-     *
-     * @param Role $role
-     * @return bool
-     */
-    private function isActiveRol(Role $role)
-    {
-        $validRole = $this->roles()->wherePivot('role_id', $role->id)->withPivot('deleted_at')->first();
-        return $validRole ? $validRole->pivot->deleted_at === null : false;
-    }
-
-    /**
      * Get the patients for the user.
      */
     public function patients()
@@ -185,24 +203,5 @@ class User extends Authenticatable
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
-    }
-
-    /**
-     * Get all active doctors and have the medical speciality.
-     *
-     * @param int $medicalSpecialityId
-     * @return array
-     */
-    public static function doctorsByMedicalSpeciality(int $medicalSpecialityId)
-    {
-        return DB::select('select u.id, u.name, u.last_name
-                from users u
-                inner join role_user ru on u.id = ru.user_id
-                inner join roles r on ru.role_id = r.id
-                inner join medical_speciality_user msu on u.id = msu.user_id
-                inner join medical_specialities ms on msu.medical_speciality_id = ms.id
-                where r.name = :role and ru.deleted_at is null and ms.id = :medical_speciality_id
-                order by u.name, u.last_name',
-            ['role' => Role::DOCTOR, 'medical_speciality_id' => $medicalSpecialityId]);
     }
 }
