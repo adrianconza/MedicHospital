@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Appointment;
-use App\Models\ImagingExam;
-use App\Models\LaboratoryExam;
 use App\Models\MedicalExam;
 use App\Models\MedicalRecord;
-use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\Recipe;
 use Exception;
