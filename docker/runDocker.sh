@@ -23,7 +23,7 @@ echo '------------------------------'
 if $MIGRATE
 then
     echo '-- Start migrate --'
-	sudo docker-compose exec app php artisan migrate
+	sudo sudo docker exec -it medic-hospital-app php artisan migrate --force
 	echo '-- Finish migrate --'
 	echo '------------------------------'
 fi
