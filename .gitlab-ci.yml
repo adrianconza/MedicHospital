@@ -18,7 +18,7 @@ enviroment:
     - sed -i 's/APP_ENV=local/APP_ENV=production/g' .env
     - sed -i "s/\bAPP_KEY=\b/APP_KEY=$APP_KEY/g" .env
     - sed -i 's/APP_DEBUG=true/APP_DEBUG=false/g' .env
-    - sed -i "s/APP_URL=http:\/\/localhost/APP_URL=http:\/\/$PRODUCTION_DOMAIN/g" .env
+    - sed -i "s/APP_URL=http:\/\/localhost/APP_URL=https:\/\/$PRODUCTION_DOMAIN/g" .env
     - sed -i "s/DB_HOST=mysql/DB_HOST=$DB_HOST/g" .env
     - sed -i "s/DB_DATABASE=laravel/DB_DATABASE=$DB_DATABASE/g" .env
     - sed -i "s/DB_USERNAME=root/DB_USERNAME=$DB_USERNAME/g" .env
