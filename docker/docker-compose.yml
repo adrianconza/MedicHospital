@@ -1,0 +1,33 @@
+version: '3'
+services:
+    app:
+        image: $PRODUCTION_IMAGE
+        container_name: medic-hospital-app
+        restart: unless-stopped
+        volumes:
+          - medic-hospital-app:/var/www
+        ports:
+            - 9000:9000
+        networks:
+            - medic-hospital
+
+    nginx:
+        image: nginx:alpine
+        container_name: medic-hospital-nginx
+        restart: unless-stopped
+        volumes:
+            - medic-hospital-app:/var/www
+            - ./default.conf:/etc/nginx/conf.d/default.conf
+        ports:
+            - $PRODUCTION_PORT:80
+        networks:
+            - medic-hospital
+        depends_on:
+            - app
+
+networks:
+    medic-hospital:
+        driver: bridge
+
+volumes:
+    medic-hospital-app:

@@ -45,9 +45,43 @@ $ npm run install
 ## 🚀 Running with laravel server
 ```bash
 $ php artisan serve
+```
 
-# generate build of css and js
+## 🐳 Running with docker
+```bash
+# to run the project
+$ docker-compose up
+
+# to run the project in the background
+$ docker-compose up -d
+
+# to stop the project
+$ docker-compose down
+```
+
+> ### Note to run commands with the docker:
+> To run the commands in the docker container you need 
+> to do it using the following `docker-compose exec`
+> followed by the name of the service with which it was created
+> in the docker-compose file
+>
+> For this case the command would be: `docker-compose exec app`
+> ```bash
+> # run migrate all tables in the container docker
+> $ docker-compose exec app php artisan migrate
+>
+> # generate buil of css and js in the container docker
+> $ docker-compose exec app npm run dev
+> ```
+
+
+## 📦 Generate build of css and js
+```bash
+# development mode
 $ npm run dev
+
+# production mode
+$ npm run prod
 ```
  
 ## 📑 Migrations

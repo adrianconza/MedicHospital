@@ -1,0 +1,120 @@
+stages:
+  - enviroment
+  - build
+  - package
+  - deploy
+
+variables:
+  PRODUCTION_IMAGE: $CI_REGISTRY_IMAGE:latest
+  CI_DEPLOY_USER: gitlab-ci-token
+  CI_DEPLOY_PASSWORD: $CI_JOB_TOKEN
+
+enviroment:
+  image: alpine
+  stage: enviroment
+  script:
+    - cp .env.example .env
+    - sed -i 's/APP_NAME=Laravel/APP_NAME="Medic Hospital"/g' .env
+    - sed -i 's/APP_ENV=local/APP_ENV=production/g' .env
+    - sed -i "s/\bAPP_KEY=\b/APP_KEY=$APP_KEY/g" .env
+    - sed -i 's/APP_DEBUG=true/APP_DEBUG=false/g' .env
+    - sed -i "s/APP_URL=http:\/\/localhost/APP_URL=https:\/\/$PRODUCTION_DOMAIN/g" .env
+    - sed -i "s/DB_HOST=mysql/DB_HOST=$DB_HOST/g" .env
+    - sed -i "s/DB_DATABASE=laravel/DB_DATABASE=$DB_DATABASE/g" .env
+    - sed -i "s/DB_USERNAME=root/DB_USERNAME=$DB_USERNAME/g" .env
+    - sed -i "s/DB_PASSWORD=/DB_PASSWORD=$DB_PASSWORD/g" .env
+    - sed -i "s/MAIL_HOST=mailhog/MAIL_HOST=$MAIL_HOST/g" .env
+    - sed -i "s/MAIL_PORT=1025/MAIL_PORT=$MAIL_PORT/g" .env
+    - sed -i "s/MAIL_USERNAME=null/MAIL_USERNAME=$MAIL_USERNAME/g" .env
+    - sed -i "s/MAIL_PASSWORD=null/MAIL_PASSWORD=$MAIL_PASSWORD/g" .env
+    - sed -i "s/MAIL_ENCRYPTION=null/MAIL_ENCRYPTION=$MAIL_ENCRYPTION/g" .env
+    - sed -i "s/MAIL_FROM_ADDRESS=null/MAIL_FROM_ADDRESS=$MAIL_FROM_ADDRESS/g" .env
+    - cat .env
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - .env
+  only:
+    - master
+
+build:
+  image: node:14.16.0-alpine
+  stage: build
+  script:
+    - npm i
+    - npm run prod
+  cache:
+    key: ${CI_COMMIT_REF_NAME}
+    paths:
+      - node_modules/
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - .env
+      - public
+  needs:
+    - enviroment
+  only:
+    - master
+
+package:
+  image: docker:stable
+  stage: package
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build --pull -t $PRODUCTION_IMAGE .
+    - docker push $PRODUCTION_IMAGE
+  cache:
+    key: ${CI_COMMIT_REF_NAME}
+    paths:
+      - node_modules/
+    policy: pull
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - .env
+      - public
+  needs:
+    - build
+  only:
+    - master
+
+deploy:
+  image: alpine
+  stage: deploy
+  before_script:
+    # Install ssh-agent if not already installed, it is required by Docker.
+    - 'which ssh-agent || ( apk update && apk add openssh-client )'
+    - 'which wget || ( apk update && apk add wget )'
+
+    # Run ssh-agent (inside the build environment)
+    - eval $(ssh-agent -s)
+
+    # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+
+    # For Docker builds disable host key checking. Be aware that by adding that
+    # you are suspectible to man-in-the-middle attacks.
+    # WARNING: Use this only with the Docker executor, if you use it with shell
+    # you will overwrite your user's SSH config.
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "sudo mkdir -p /var/www/medic-hospital && sudo chown -R $PRODUCTION_USER:$PRODUCTION_USER /var/www/medic-hospital"
+    - scp -r ./docker/* $PRODUCTION_USER@$PRODUCTION_IP1:/var/www/medic-hospital
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "cd /var/www/medic-hospital && CI_DEPLOY_USER=$CI_DEPLOY_USER CI_DEPLOY_PASSWORD=$CI_DEPLOY_PASSWORD CI_REGISTRY=$CI_REGISTRY PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT MIGRATE=true sh runDocker.sh"
+    - wget $PRODUCTION_IP1:$PRODUCTION_PORT -O /dev/null
+
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "sudo mkdir -p /var/www/medic-hospital && sudo chown -R $PRODUCTION_USER:$PRODUCTION_USER /var/www/medic-hospital"
+    - scp -r ./docker/* $PRODUCTION_USER@$PRODUCTION_IP2:/var/www/medic-hospital
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "cd /var/www/medic-hospital && CI_DEPLOY_USER=$CI_DEPLOY_USER CI_DEPLOY_PASSWORD=$CI_DEPLOY_PASSWORD CI_REGISTRY=$CI_REGISTRY PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT MIGRATE=false sh runDocker.sh"
+    - wget $PRODUCTION_IP2:$PRODUCTION_PORT -O /dev/null
+
+    - wget $PRODUCTION_DOMAIN -O /dev/null
+  needs:
+    - package
+  only:
+    - master
