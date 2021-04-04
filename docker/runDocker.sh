@@ -5,25 +5,30 @@ echo $CI_DEPLOY_PASSWORD | sudo docker login -u $CI_DEPLOY_USER --password-stdin
 export PRODUCTION_IMAGE=$PRODUCTION_IMAGE
 export PRODUCTION_PORT=$PRODUCTION_PORT
 
+echo '-- Start docker compose Down --'
 sudo -E docker-compose down
-echo 'Finish docker compose Down'
-echo ''
+echo '-- Finish docker compose Down --'
+echo '------------------------------'
 
-echo 'Delete images docker'
+echo '-- Delete images docker --'
 sh deleteImagesDocker.sh
-echo 'Finish delete images docker'
-echo ''
+echo '-- Finish delete images docker --'
+echo '------------------------------'
 
+echo '-- Start docker compose Up --'
 sudo -E docker-compose up -d
-echo 'Finish docker compose Up'
-echo ''
+echo '-- Finish docker compose Up --'
+echo '------------------------------'
 
 if $MIGRATE
 then
-    echo 'Start migrate'
+    echo '-- Start migrate --'
 	sudo docker-compose exec app php artisan migrate
-	echo 'Finish migrate'
-	echo ''
+	echo '-- Finish migrate --'
+	echo '------------------------------'
 fi
 
+echo '-- Check the App --'
 wget -t inf localhost:$PRODUCTION_PORT -O /dev/null
+echo '-- Finish check the App --'
+echo '------------------------------'
