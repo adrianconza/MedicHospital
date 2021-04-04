@@ -59,6 +59,9 @@ build:
 package:
   image: docker:stable
   stage: package
+  dependencies:
+    - enviroment
+    - build
   services:
     - docker:dind
   before_script:
