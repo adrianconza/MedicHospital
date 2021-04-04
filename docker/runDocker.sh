@@ -10,9 +10,9 @@ sudo -E docker-compose down
 echo '-- Finish docker compose Down --'
 echo '------------------------------'
 
-echo '-- Delete images docker --'
+echo '-- Delete images docker and volumes --'
 sh deleteImagesDocker.sh
-echo '-- Finish delete images docker --'
+echo '-- Finish delete images docker and volumes --'
 echo '------------------------------'
 
 echo '-- Start docker compose Up --'
