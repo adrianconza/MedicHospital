@@ -9,6 +9,11 @@ sudo -E docker-compose down
 echo 'Finish docker compose Down'
 echo ''
 
+echo 'Delete images docker'
+sh deleteImagesDocker.sh
+echo 'Finish delete images docker'
+echo ''
+
 sudo -E docker-compose up -d
 echo 'Finish docker compose Up'
 echo ''
