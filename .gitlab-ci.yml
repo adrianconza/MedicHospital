@@ -80,13 +80,13 @@ deploy:
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "mkdir /var/www/medic-hospital"
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "mkdir -p /var/www/medic-hospital"
     - scp -r ./docker $PRODUCTION_USER@$PRODUCTION_IP1:/var/www/medic-hospital
     - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "cd /var/www/medic-hospital && sh deleteImagesDocker.sh"
     - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "cd /var/www/medic-hospital && sudo -E docker-compose down && echo $CI_DEPLOY_PASSWORD | sudo docker login -u $CI_DEPLOY_USER --password-stdin $CI_REGISTRY && PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT sudo -E docker-compose up -d && docker-compose exec app php artisan migrate && wget -t inf localhost:$PRODUCTION_PORT -O /dev/null"
     - wget $PRODUCTION_IP1:$PRODUCTION_PORT -O /dev/null
 
-    - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "mkdir /var/www/medic-hospital"
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "mkdir -p /var/www/medic-hospital"
     - scp -r ./docker $PRODUCTION_USER@$PRODUCTION_IP2:/var/www/medic-hospital
     - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "cd /var/www/medic-hospital && sh deleteImagesDocker.sh"
     - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "cd /var/www/medic-hospital && sudo -E docker-compose down && echo $CI_DEPLOY_PASSWORD | sudo docker login -u $CI_DEPLOY_USER --password-stdin $CI_REGISTRY && PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT sudo -E docker-compose up -d && wget -t inf localhost:$PRODUCTION_PORT -O /dev/null"
