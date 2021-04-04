@@ -42,6 +42,10 @@ build:
   script:
     - npm i
     - npm run prod
+  cache:
+    key: ${CI_COMMIT_REF_NAME}
+    paths:
+      - node_modules/
   artifacts:
     paths:
       - public
@@ -60,6 +64,15 @@ package:
   script:
     - docker build --pull -t $PRODUCTION_IMAGE .
     - docker push $PRODUCTION_IMAGE
+  cache:
+    key: ${CI_COMMIT_REF_NAME}
+    paths:
+      - node_modules/
+    policy: pull
+  artifacts:
+    paths:
+      - .env
+      - public
   needs:
     - build
   only:
