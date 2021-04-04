@@ -1,9 +1,7 @@
-image: docker:stable
-services:
-  - docker:dind
-
 stages:
+  - env
   - build
+  - package
   - deploy
 
 variables:
@@ -11,16 +9,14 @@ variables:
   CI_DEPLOY_USER: gitlab-ci-token
   CI_DEPLOY_PASSWORD: $CI_JOB_TOKEN
 
-before_script:
-  - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
-
-build:
-  stage: build
+env:
+  image: alpine
+  stage: env
   script:
-    - php artisan key:generate
     - cp .env.example .env
     - sed -i 's/APP_NAME=Laravel/APP_NAME="Medic Hospital"/g' .env
     - sed -i 's/APP_ENV=local/APP_ENV=production/g' .env
+    - sed -i 's/APP_KEY=/APP_KEY=$APP_KEY/g' .env
     - sed -i 's/APP_DEBUG=true/APP_DEBUG=false/g' .env
     - sed -i 's/APP_URL=http:\/\/localhost/APP_URL=http:\/\/$PRODUCTION_DOMAIN/g' .env
     - sed -i 's/DB_HOST=mysql/DB_HOST=$DB_HOST/g' .env
@@ -34,25 +30,48 @@ build:
     - sed -i 's/MAIL_ENCRYPTION=null/MAIL_ENCRYPTION=$MAIL_ENCRYPTION/g' .env
     - sed -i 's/MAIL_FROM_ADDRESS=null/MAIL_FROM_ADDRESS=$MAIL_FROM_ADDRESS/g' .env
     - cat .env
+  artifacts:
+    paths:
+      - .env
+  only:
+    - master
+  when: manual
+
+build:
+  image: node:14.16.0-alpine
+  stage: build
+  script:
+    - npm i
     - npm run prod
+  only:
+    - master
+
+package:
+  image: docker:stable
+  stage: package
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+  script:
     - docker build --pull -t $PRODUCTION_IMAGE .
     - docker push $PRODUCTION_IMAGE
   only:
     - master
 
 deploy:
-  image: ubuntu:18.04
+  image: alpine
   stage: deploy
   before_script:
     # Install ssh-agent if not already installed, it is required by Docker.
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - 'which wget || ( apt-get update -y && apt-get install wget -y )'
+    - 'which ssh-agent || ( apk update && apk add openssh-client )'
+    - 'which wget || ( apk update && apk add wget )'
 
     # Run ssh-agent (inside the build environment)
     - eval $(ssh-agent -s)
 
     # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
 
     # For Docker builds disable host key checking. Be aware that by adding that
     # you are suspectible to man-in-the-middle attacks.
@@ -63,14 +82,14 @@ deploy:
   script:
     - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "mkdir /var/www/medic-hospital"
     - scp -r ./docker $PRODUCTION_USER@$PRODUCTION_IP1:/var/www/medic-hospital
-    - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "cd /var/www/medic-hospital && PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT sudo -E docker-compose down && sh deleteImagesDocker.sh"
-    - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "cd /var/www/medic-hospital && echo $CI_DEPLOY_PASSWORD | sudo docker login -u $CI_DEPLOY_USER --password-stdin $CI_REGISTRY && PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT sudo -E docker-compose up -d && docker-compose exec app php artisan migrate && wget -t inf localhost:$PRODUCTION_PORT -O /dev/null"
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "cd /var/www/medic-hospital && sh deleteImagesDocker.sh"
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP1 "cd /var/www/medic-hospital && sudo -E docker-compose down && echo $CI_DEPLOY_PASSWORD | sudo docker login -u $CI_DEPLOY_USER --password-stdin $CI_REGISTRY && PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT sudo -E docker-compose up -d && docker-compose exec app php artisan migrate && wget -t inf localhost:$PRODUCTION_PORT -O /dev/null"
     - wget $PRODUCTION_IP1:$PRODUCTION_PORT -O /dev/null
 
     - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "mkdir /var/www/medic-hospital"
     - scp -r ./docker $PRODUCTION_USER@$PRODUCTION_IP2:/var/www/medic-hospital
-    - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "cd /var/www/medic-hospital && PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT sudo -E docker-compose down && sh deleteImagesDocker.sh"
-    - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "cd /var/www/medic-hospital && echo $CI_DEPLOY_PASSWORD | sudo docker login -u $CI_DEPLOY_USER --password-stdin $CI_REGISTRY && PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT sudo -E docker-compose up -d && wget -t inf localhost:$PRODUCTION_PORT -O /dev/null"
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "cd /var/www/medic-hospital && sh deleteImagesDocker.sh"
+    - ssh $PRODUCTION_USER@$PRODUCTION_IP2 "cd /var/www/medic-hospital && sudo -E docker-compose down && echo $CI_DEPLOY_PASSWORD | sudo docker login -u $CI_DEPLOY_USER --password-stdin $CI_REGISTRY && PRODUCTION_IMAGE=$PRODUCTION_IMAGE PRODUCTION_PORT=$PRODUCTION_PORT sudo -E docker-compose up -d && wget -t inf localhost:$PRODUCTION_PORT -O /dev/null"
     - wget $PRODUCTION_IP2:$PRODUCTION_PORT -O /dev/null
 
     - wget $PRODUCTION_DOMAIN -O /dev/null
