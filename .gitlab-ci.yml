@@ -56,6 +56,9 @@ package:
   script:
     - docker build --pull -t $PRODUCTION_IMAGE .
     - docker push $PRODUCTION_IMAGE
+  artifacts:
+    paths:
+      - .env
   only:
     - master
 

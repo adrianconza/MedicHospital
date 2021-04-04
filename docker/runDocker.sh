@@ -6,11 +6,19 @@ export PRODUCTION_IMAGE=$PRODUCTION_IMAGE
 export PRODUCTION_PORT=$PRODUCTION_PORT
 
 sudo -E docker-compose down
-sudo -E docker-compose up -d
+echo 'Finish docker compose Down'
+echo ''
 
-if [ $MIGRATE = true ];
+sudo -E docker-compose up -d
+echo 'Finish docker compose Up'
+echo ''
+
+if $MIGRATE
 then
+    echo 'Start migrate'
 	sudo docker-compose exec app php artisan migrate
+	echo 'Finish migrate'
+	echo ''
 fi
 
 wget -t inf localhost:$PRODUCTION_PORT -O /dev/null
