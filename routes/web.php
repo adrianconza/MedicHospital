@@ -86,4 +86,4 @@ Route::put('my-patient/{id}/restore', [MyPatientController::class, 'restore'])->
 
 Route::resource('my-appointment', MyAppointmentController::class)->except(['edit', 'update', 'destroy'])->names('client.myAppointment');
 
-Route::resource('my-medical-record', MyMedicalRecordController::class)->only(['index', 'show'])->names('client.myMedicalRecord');
+Route::resource('my-medical-record', MyMedicalRecordController::class)->only(['index', 'show', 'update'])->names('client.myMedicalRecord');

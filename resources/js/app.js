@@ -119,3 +119,11 @@ $('#scheduleModal').on('show.bs.modal', function (event) {
     modal.find('.modal-body #doctor').val(doctorId);
     modal.find('.modal-body #doctor_show').val(doctor);
 })
+
+$('#qualifyModal').on('show.bs.modal', function (event) {
+    const button = $(event.relatedTarget);
+    const startTime = button.data('medical-record-id');
+
+    const modal = $(this);
+    modal.find('#medical_record_id').val(startTime);
+})

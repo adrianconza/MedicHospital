@@ -46,7 +46,7 @@
                             <td class="align-middle">{{ $patient->identification }}</td>
                             <td class="align-middle">{{ $patient->email }}</td>
                             <td class="align-middle">{{ $patient->phone }}</td>
-                            <td class="align-middle">{{ $patient->trashed() ? 'Desactivo' : 'Activo' }}</td>
+                            <td class="align-middle">{{ $patient->isActive(Auth::id()) ? 'Activo' : 'Desactivo' }}</td>
                             <td class="align-middle col-action">
                                 <div class="d-flex flex-row justify-content-end align-items-center">
                                     @if($patient->isActive(Auth::id()))
