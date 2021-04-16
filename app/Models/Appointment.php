@@ -14,6 +14,16 @@ class Appointment extends Model
     use HasFactory, SoftDeletes;
 
     /**
+     * The qualify of the appointment
+     *
+     * @var array
+     */
+    const TYPE = [
+        'TN' => 'Turno normal',
+        'TE' => 'Turno extra',
+    ];
+
+    /**
      * The time of the appointment.
      * This time is in minutes
      *

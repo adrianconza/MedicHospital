@@ -55,6 +55,7 @@ class ScheduleController extends Controller
         }
 
         $patients = Patient::orderBy('name')->get();
-        return view('doctor.schedule.index', compact('patients', 'appointments', 'daySearch', 'patientSearch'));
+        $appointmentTypeEnum = Appointment::TYPE;
+        return view('doctor.schedule.index', compact('patients', 'appointments', 'daySearch', 'patientSearch', 'appointmentTypeEnum'));
     }
 }

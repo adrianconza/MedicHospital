@@ -39,6 +39,7 @@
                     <th scope="col">Duración</th>
                     <th scope="col">Paciente</th>
                     <th scope="col">Especialidad</th>
+                    <th scope="col">Tipo</th>
                     <th scope="col">Acciones</th>
                 </tr>
                 </thead>
@@ -51,6 +52,7 @@
                             <td class="align-middle">{{ $appointment->duration }}</td>
                             <td class="align-middle">{{ $appointment->patient->name }} {{ $appointment->patient->last_name }}</td>
                             <td class="align-middle">{{ $appointment->medicalSpeciality->name }}</td>
+                            <td class="align-middle">{{ $appointmentTypeEnum[$appointment->type] }}</td>
                             <td class="align-middle col-action">
                                 <div class="d-flex flex-row justify-content-end align-items-center">
                                     <a href="{{ route('doctor.medicalRecord.index', ['appointment' => $appointment->id]) }}"
@@ -61,7 +63,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="6" class="text-center">No se encontraron resultados.</td>
+                        <td colspan="7" class="text-center">No se encontraron resultados.</td>
                     </tr>
                 @endif
                 </tbody>

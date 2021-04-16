@@ -22,6 +22,7 @@
 
         <div class="pb-5">
             <h2 class="text-secondary h4">Datos de la cita médica</h2>
+            <span class="text-muted d-block pb-2">{{ $appointmentTypeEnum[$appointment->type] }}</span>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="start_time">Fecha inicio</label>

@@ -49,7 +49,8 @@ class MedicalRecordController extends Controller
         $medicalRecords = MedicalRecord::whereHas('appointment', function ($q) use ($appointment) {
             $q->where('patient_id', $appointment->patient_id);
         })->orderBy('created_at')->paginate(10);
-        return view('doctor.medicalRecord.index', compact('appointment', 'medicalRecords'));
+        $appointmentTypeEnum = Appointment::TYPE;
+        return view('doctor.medicalRecord.index', compact('appointment', 'medicalRecords', 'appointmentTypeEnum'));
     }
 
     /**
