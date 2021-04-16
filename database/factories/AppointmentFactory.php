@@ -29,6 +29,7 @@ class AppointmentFactory extends Factory
             'end_time' => $endTime,
             'duration' => '00:' . Appointment::TIME,
             'reason' => $this->faker->text,
+            'type' => $this->faker->randomElement(array_keys(Appointment::TYPE))
         ];
     }
 }
