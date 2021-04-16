@@ -19,6 +19,7 @@ use App\Http\Controllers\PatientAttendedController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientMedicalRecordController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ReportAppointmentsQualificationsController;
 use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +71,8 @@ Route::put('medicine/{id}/restore', [MedicineController::class, 'restore'])->nam
 Route::resource('appointment', AppointmentController::class)->except(['edit', 'update'])->names('admin.appointment');
 
 Route::resource('medical-exam', MedicalExamController::class)->only(['index', 'edit', 'update'])->names('admin.medicalExam');
+
+Route::resource('report-appointments-qualifications', ReportAppointmentsQualificationsController::class)->only(['index'])->names('admin.reportAppointmentsQualifications');
 
 Route::resource('schedule', ScheduleController::class)->only(['index'])->names('doctor.schedule');
 

@@ -142,6 +142,32 @@ class Appointment extends Model
     }
 
     /**
+     * Generate reports of appointments and qualifications.
+     *
+     * @return array
+     */
+    public static function generateReportAppointmentsAndQualifications()
+    {
+        return DB::select('select u.id, u.name, u.last_name, count(mr.id) num_appointments,
+                       round(coalesce(avg(
+                           case mr.qualify
+                               when "RG" then 1
+                               when "BN" then 2
+                               when "EX" then 3
+                           END
+                       ), 0), 2) avg_qualify
+                from users u
+                inner join role_user ru on u.id = ru.user_id
+                inner join roles r on ru.role_id = r.id
+                left join appointments a on u.id = a.user_id
+                left join medical_records mr on a.id = mr.appointment_id
+                where r.name = :role
+                group by u.id, u.name, u.last_name
+                order by u.name, u.last_name',
+            ['role' => Role::DOCTOR]);
+    }
+
+    /**
      * Get the patient for the appointment.
      */
     public function patient()

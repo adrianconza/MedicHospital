@@ -83,6 +83,14 @@
                                     <a class="dropdown-item" href="{{ route('admin.medicalExam.index') }}">
                                         Exámenes médicos
                                     </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item disabled" href="#">
+                                        Reportes
+                                    </a>
+                                    <a class="dropdown-item"
+                                       href="{{ route('admin.reportAppointmentsQualifications.index') }}">
+                                        Citas médicas y calificaciones
+                                    </a>
                                 @endif
                                 @if (Auth::user()->isActiveDoctor())
                                     @if (Auth::user()->isActiveAdministrator() || Auth::user()->isActiveClient())
