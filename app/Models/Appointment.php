@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Carbon\Traits\Creator;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,30 @@ use Illuminate\Support\Facades\DB;
 class Appointment extends Model
 {
     use HasFactory, SoftDeletes;
+
+    /**
+     * The normal shift type.
+     *
+     * @var string
+     */
+    const NORMAL_SHIFT = 'TN';
+
+    /**
+     * The extra shift type.
+     *
+     * @var string
+     */
+    const EXTRA_SHIFT = 'TE';
+
+    /**
+     * The qualify of the appointment
+     *
+     * @var array
+     */
+    const TYPE = [
+        Appointment::NORMAL_SHIFT => 'Turno normal',
+        Appointment::EXTRA_SHIFT => 'Turno extra',
+    ];
 
     /**
      * The time of the appointment.
@@ -139,6 +164,80 @@ class Appointment extends Model
         }
 
         return $appointments;
+    }
+
+    /**
+     * Generate reports of appointments and qualifications.
+     *
+     * @return array
+     */
+    public static function generateReportAppointmentsAndQualifications()
+    {
+        return DB::select('select u.id, u.name, u.last_name, count(mr.id) num_appointments,
+                       round(coalesce(avg(
+                           case mr.qualify
+                               when "RG" then 1
+                               when "BN" then 2
+                               when "EX" then 3
+                           END
+                       ), 0), 2) avg_qualify
+                from users u
+                inner join role_user ru on u.id = ru.user_id
+                inner join roles r on ru.role_id = r.id
+                left join appointments a on u.id = a.user_id
+                left join medical_records mr on a.id = mr.appointment_id
+                where r.name = :role
+                group by u.id, u.name, u.last_name
+                order by u.name, u.last_name',
+            ['role' => Role::DOCTOR]);
+    }
+
+    /**
+     * Validate exist appointment.
+     *
+     * @param int $userId
+     * @param string $startTime
+     * @param string $endTime
+     * @return bool
+     */
+    public static function validateExistAppointment(int $userId, string $startTime, string $endTime)
+    {
+        $exist = DB::select('select a.*
+                from appointments a
+                inner join users u on u.id = a.user_id
+                where a.deleted_at is null and u.id = :user_id and a.start_time >= :start_time and a.end_time <= :end_time',
+            ['user_id' => $userId, 'start_time' => $startTime, 'end_time' => $endTime]);
+        return (bool)$exist;
+    }
+
+    /**
+     * Validate extra shift.
+     *
+     * @param int $userId
+     * @param Carbon $startTime
+     * @return bool
+     */
+    public static function validateExtraShift(int $userId, Carbon $startTime)
+    {
+        $doctor = User::find($userId);
+        $extraShift = true;
+        foreach ($doctor->attentionSchedules as $attentionSchedule) {
+            $startAttentionSchedule = new Carbon($attentionSchedule->start_time);
+            $startAttentionSchedule->day = $startTime->day;
+            $startAttentionSchedule->month = $startTime->month;
+            $startAttentionSchedule->year = $startTime->year;
+
+            $endAttentionSchedule = new Carbon($attentionSchedule->end_time);
+            $endAttentionSchedule->day = $startTime->day;
+            $endAttentionSchedule->month = $startTime->month;
+            $endAttentionSchedule->year = $startTime->year;
+
+            if ($startAttentionSchedule->lte($startTime) && $endAttentionSchedule->gt($startTime)) {
+                $extraShift = false;
+                break;
+            }
+        }
+        return $extraShift;
     }
 
     /**

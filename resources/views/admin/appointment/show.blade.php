@@ -40,6 +40,13 @@
         </div>
 
         <div class="form-group col-md-6 p-0">
+            <label for="medical-speciality">Tipo</label>
+            <input id="medical-speciality" type="text" disabled
+                   value="{{ $appointmentTypeEnum[$appointment->type] }}"
+                   class="form-control">
+        </div>
+
+        <div class="form-group col-md-6 p-0">
             <label for="reason">Razón</label>
             <textarea id="reason" rows="5" disabled class="form-control">{{ $appointment->reason }}</textarea>
         </div>

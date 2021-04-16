@@ -52,7 +52,8 @@ class AppointmentController extends Controller
         $doctors = User::whereHas('roles', function ($q) {
             $q->where('name', Role::DOCTOR);
         })->orderBy('name')->get();
-        return view('admin.appointment.index', compact('patients', 'doctors', 'appointments', 'doctorSearch', 'patientSearch'));
+        $appointmentTypeEnum = Appointment::TYPE;
+        return view('admin.appointment.index', compact('patients', 'doctors', 'appointments', 'doctorSearch', 'patientSearch', 'appointmentTypeEnum'));
     }
 
     /**
@@ -128,6 +129,60 @@ class AppointmentController extends Controller
     }
 
     /**
+     * Store a extra shift.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function storeExtraShift(Request $request)
+    {
+        $request->validate([
+            'day_appointment' => 'bail|required|after_or_equal:today|date',
+            'start_time' => 'bail|required',
+            'reason' => 'bail|required|min:5|max:500|string',
+            'medical_speciality' => 'bail|required|numeric',
+            'doctor' => 'bail|required',
+            'patient' => 'bail|required',
+        ]);
+
+        $startTime = new Carbon($request->day_appointment . $request->start_time);
+        $endTime = $startTime->copy()->addMinutes(Appointment::TIME);
+
+        if ($startTime->lt(Carbon::now())) {
+            return redirect()->route('admin.appointment.create', ['day_appointment' => $request->day_appointment, 'medical_speciality' => $request->medical_speciality, 'doctor' => $request->doctor]);
+        }
+
+        $existAppointment = Appointment::validateExistAppointment($request->doctor, $startTime, $endTime);
+        if ($existAppointment) {
+            return redirect()->route('admin.appointment.create', ['day_appointment' => $request->day_appointment, 'medical_speciality' => $request->medical_speciality, 'doctor' => $request->doctor]);
+        }
+
+        $extraShift = Appointment::validateExtraShift($request->doctor, $startTime);
+        if (!$extraShift) {
+            return redirect()->route('admin.appointment.create', ['day_appointment' => $request->day_appointment, 'medical_speciality' => $request->medical_speciality, 'doctor' => $request->doctor]);
+        }
+
+        $medicalSpeciality = MedicalSpeciality::find($request->medical_speciality);
+        $doctor = User::find($request->doctor);
+        $patient = Patient::find($request->patient);
+        $appointment = new Appointment();
+        $appointment->fill($request->all());
+        $appointment->start_time = $startTime;
+        $appointment->end_time = $endTime;
+        $duration = Carbon::now();
+        $duration->hour = 0;
+        $duration->minute = Appointment::TIME;
+        $duration->second = 0;
+        $appointment->duration = $duration;
+        $appointment->type = Appointment::EXTRA_SHIFT;
+        $appointment->patient()->associate($patient);
+        $appointment->medicalSpeciality()->associate($medicalSpeciality);
+        $appointment->user()->associate($doctor);
+        $appointment->save();
+        return redirect()->route('admin.appointment.index');
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param Appointment $appointment
@@ -135,7 +190,8 @@ class AppointmentController extends Controller
      */
     public function show(Appointment $appointment)
     {
-        return view('admin.appointment.show', compact('appointment'));
+        $appointmentTypeEnum = Appointment::TYPE;
+        return view('admin.appointment.show', compact('appointment', 'appointmentTypeEnum'));
     }
 
     /**

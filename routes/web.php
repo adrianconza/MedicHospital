@@ -19,6 +19,7 @@ use App\Http\Controllers\PatientAttendedController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientMedicalRecordController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ReportAppointmentsQualificationsController;
 use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -68,8 +69,11 @@ Route::resource('medicine', MedicineController::class)->names('admin.medicine');
 Route::put('medicine/{id}/restore', [MedicineController::class, 'restore'])->name('admin.medicine.restore');
 
 Route::resource('appointment', AppointmentController::class)->except(['edit', 'update'])->names('admin.appointment');
+Route::post('appointment/store-extra-shift', [AppointmentController::class, 'storeExtraShift'])->name('admin.appointment.storeExtraShift');
 
 Route::resource('medical-exam', MedicalExamController::class)->only(['index', 'edit', 'update'])->names('admin.medicalExam');
+
+Route::resource('report-appointments-qualifications', ReportAppointmentsQualificationsController::class)->only(['index'])->names('admin.reportAppointmentsQualifications');
 
 Route::resource('schedule', ScheduleController::class)->only(['index'])->names('doctor.schedule');
 
@@ -86,4 +90,4 @@ Route::put('my-patient/{id}/restore', [MyPatientController::class, 'restore'])->
 
 Route::resource('my-appointment', MyAppointmentController::class)->except(['edit', 'update', 'destroy'])->names('client.myAppointment');
 
-Route::resource('my-medical-record', MyMedicalRecordController::class)->only(['index', 'show'])->names('client.myMedicalRecord');
+Route::resource('my-medical-record', MyMedicalRecordController::class)->only(['index', 'show', 'update'])->names('client.myMedicalRecord');

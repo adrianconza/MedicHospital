@@ -50,6 +50,7 @@
                     <th scope="col">Paciente</th>
                     <th scope="col">Médico</th>
                     <th scope="col">Especialidad</th>
+                    <th scope="col">Tipo</th>
                     <th scope="col">Acciones</th>
                 </tr>
                 </thead>
@@ -63,6 +64,7 @@
                             <td class="align-middle">{{ $appointment->patient->name }} {{ $appointment->patient->last_name }}</td>
                             <td class="align-middle">{{ $appointment->user->name }} {{ $appointment->user->last_name }}</td>
                             <td class="align-middle">{{ $appointment->medicalSpeciality->name }}</td>
+                            <td class="align-middle">{{ $appointmentTypeEnum[$appointment->type] }}</td>
                             <td class="align-middle col-action">
                                 <div class="d-flex flex-row justify-content-end align-items-center">
                                     <a href="{{ route('admin.appointment.show', $appointment) }}"

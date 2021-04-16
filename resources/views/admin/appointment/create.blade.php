@@ -43,6 +43,12 @@
                 <button type="submit" class="btn btn-primary">
                     <span>Buscar</span>
                 </button>
+                @if($medicalSpecialityId && $doctors)
+                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                            data-target="#scheduleExtraShiftModal">
+                        Agendar turno extra
+                    </button>
+                @endif
             </div>
         </form>
 
@@ -129,8 +135,8 @@
 
                             <div class="form-group">
                                 <label for="patient">Paciente *</label>
-                                <select id="patient" name="patient"
-                                        class="form-control @error('medical_speciality') is-invalid @enderror"
+                                <select id="patient" name="patient" required
+                                        class="form-control @error('patient') is-invalid @enderror"
                                         aria-describedby="validation-city">
                                     <option value="">Selecciona el paciente</option>
                                     @if(isset($patients))
@@ -147,7 +153,103 @@
 
                             <div class="form-group">
                                 <label for="reason">Razón *</label>
-                                <textarea id="reason" name="reason" rows="5" class="form-control"></textarea>
+                                <textarea id="reason" name="reason" required rows="5" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Agendar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="scheduleExtraShiftModal" tabindex="-1" class="modal fade"
+             aria-labelledby="scheduleExtraShiftModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Agendar cita extra</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ route('admin.appointment.storeExtraShift') }}" method="POST" class="form">
+                        @csrf
+
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="start_time">Fecha y hora *</label>
+                                <div class="input-group mb-3">
+                                    <input id="day_appointment_show" type="text" disabled
+                                           class="form-control"
+                                           value="{{ $dayAppointment }}">
+                                    <input id="day_appointment" name="day_appointment" type="hidden"
+                                           value="{{ $dayAppointment }}">
+                                    <input id="start_time" name="start_time" required type="text"
+                                           placeholder="Ingresa la hora"
+                                           step="1800"
+                                           min="{{date('H:00')}}"
+                                           class="form-control"
+                                           onfocus="(this.type='time')">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="medical_speciality_show">Especialidad médica</label>
+                                <select id="medical_speciality_show" name="medical_speciality" disabled
+                                        class="form-control">
+                                    <option value="">Selecciona la especialidad médica</option>
+                                    @foreach($medicalSpecialities as $medicalSpeciality)
+                                        <option
+                                            value="{{ $medicalSpeciality->id }}" {{ +$medicalSpecialityId === +$medicalSpeciality->id ? 'selected' : '' }}>{{ $medicalSpeciality->name }}</option>
+                                    @endforeach
+                                </select>
+                                <input id="medical_speciality" name="medical_speciality" type="hidden"
+                                       value="{{ $medicalSpecialityId }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="doctor_show">Médico *</label>
+                                <select id="doctor" name="doctor" required
+                                        class="form-control @error('$doctors') is-invalid @enderror"
+                                        aria-describedby="validation-doctor">
+                                    <option value="">Selecciona un médico</option>
+                                    @if($doctors)
+                                        @foreach($doctors as $doctor)
+                                            <option
+                                                value="{{ $doctor->id }}" {{ +$doctorId === +$doctor->id ? 'selected' : '' }}>{{ $doctor->name }} {{ $doctor->last_name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                @error('doctor')
+                                <div id="validation-doctor" class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="patient">Paciente *</label>
+                                <select id="patient" name="patient" required
+                                        class="form-control @error('patient') is-invalid @enderror"
+                                        aria-describedby="validation-patient">
+                                    <option value="">Selecciona el paciente</option>
+                                    @if(isset($patients))
+                                        @foreach($patients as $patient)
+                                            <option
+                                                value="{{ $patient->id }}" {{ +old('patient') === +$patient->id ? 'selected' : '' }}>{{ $patient->name }} {{ $patient->last_name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                @error('patient')
+                                <div id="validation-patient" class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reason">Razón *</label>
+                                <textarea id="reason" name="reason" required rows="5" class="form-control"></textarea>
                             </div>
                         </div>
                         <div class="modal-footer">

@@ -7,6 +7,10 @@
                 <h1 class="text-primary">Detalle de atención</h1>
                 <span
                     class="text-info h3">Paciente: {{ $patient->name }} {{ $patient->last_name }}</span>
+                @if($medicalRecord->qualify)
+                    <span
+                        class="text-muted d-block">Calificación: {{ $qualifyEnum[$medicalRecord->qualify] }}</span>
+                @endif
             </div>
             <div class="pt-3 pt-md-0">
                 <a href="{{ route('client.myMedicalRecord.index', ['patient' => $patient->id]) }}"
