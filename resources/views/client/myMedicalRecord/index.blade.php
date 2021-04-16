@@ -50,7 +50,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="4" class="text-center">No se encontraron resultados.</td>
+                        <td colspan="5" class="text-center">No se encontraron resultados.</td>
                     </tr>
                 @endif
                 </tbody>
@@ -70,7 +70,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form action="{{ route('client.myMedicalRecord.update', $medicalRecord) }}" method="POST"
+                    <form action="{{ route('client.myMedicalRecord.update', 0) }}" method="POST"
                           class="form">
                         @method('PUT')
                         @csrf
