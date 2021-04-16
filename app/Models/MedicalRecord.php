@@ -11,12 +11,24 @@ class MedicalRecord extends Model
     use HasFactory, SoftDeletes;
 
     /**
+     * The qualify of the appointment
+     *
+     * @var array
+     */
+    const QUALIFY = [
+        'RG' => 'Regular',
+        'BN' => 'Bueno',
+        'EX' => 'Excelente',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
         'diagnosis',
+        'qualify',
     ];
 
     /**

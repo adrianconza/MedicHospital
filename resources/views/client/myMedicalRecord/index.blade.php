@@ -22,6 +22,7 @@
                     <th scope="col">Fecha</th>
                     <th scope="col">Médico</th>
                     <th scope="col">Especialidad</th>
+                    <th scope="col">Calificación</th>
                     <th scope="col">Acciones</th>
                 </tr>
                 </thead>
@@ -32,10 +33,17 @@
                             <td class="align-middle">{{ $medicalRecord->created_at }}</td>
                             <td class="align-middle">{{ $medicalRecord->appointment->user->name }} {{ $medicalRecord->appointment->user->last_name }}</td>
                             <td class="align-middle">{{ $medicalRecord->appointment->medicalSpeciality->name }}</td>
+                            <td class="align-middle">{{ $medicalRecord->qualify ? $qualifyEnum[$medicalRecord->qualify] : ''}}</td>
                             <td class="align-middle col-action">
                                 <div class="d-flex flex-row justify-content-end align-items-center">
                                     <a href="{{ route('client.myMedicalRecord.show', [$medicalRecord, 'patient' => $patient->id]) }}"
                                        class="btn btn-primary mr-1">Ver</a>
+                                    @if(!isset($medicalRecord->qualify))
+                                        <button class="btn btn-primary" data-toggle="modal"
+                                                data-target="#qualifyModal" data-medical-record-id="{{$medicalRecord->id}}">
+                                            Calificar
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -50,6 +58,44 @@
         </div>
         <div class="d-flex flex-row justify-content-end">
             {{ $medicalRecords->links() }}
+        </div>
+
+        <div id="qualifyModal" tabindex="-1" class="modal fade" aria-labelledby="qualifyModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Calificar cita</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ route('client.myMedicalRecord.update', $medicalRecord) }}" method="POST"
+                          class="form">
+                        @method('PUT')
+                        @csrf
+
+                        <input id="medical_record_id" name="medical_record_id" type="hidden">
+                        <input name="patient" type="hidden" value="{{ $patient->id }}">
+
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="qualify">Calificación</label>
+                                <select id="qualify" name="qualify" class="form-control">
+                                    <option value="">Selecciona una calificación</option>
+                                    @foreach($qualifyEnum as $clave => $valor)
+                                        <option value="{{ $clave }}">{{ $valor }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Calificar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

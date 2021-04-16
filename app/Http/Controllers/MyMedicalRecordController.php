@@ -42,7 +42,8 @@ class MyMedicalRecordController extends Controller
         $medicalRecords = MedicalRecord::whereHas('appointment', function ($q) use ($patientId) {
             $q->where('patient_id', $patientId);
         })->orderBy('created_at')->paginate(10);
-        return view('client.myMedicalRecord.index', compact('patient', 'medicalRecords'));
+        $qualifyEnum = MedicalRecord::QUALIFY;
+        return view('client.myMedicalRecord.index', compact('patient', 'medicalRecords', 'qualifyEnum'));
     }
 
     /**
@@ -63,6 +64,27 @@ class MyMedicalRecordController extends Controller
         $patient = Patient::find($patientId);
         $resultEnum = MedicalExam::RESULTS;
         $unitEnum = Recipe::UNITS;
-        return view('client.myMedicalRecord.show', compact('medicalRecord', 'patient', 'resultEnum', 'unitEnum'));
+        $qualifyEnum = MedicalRecord::QUALIFY;
+        return view('client.myMedicalRecord.show', compact('medicalRecord', 'patient', 'qualifyEnum', 'resultEnum', 'unitEnum'));
+    }
+
+    /**
+     * Update the qualify.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function update(Request $request)
+    {
+        $request->validate([
+            'qualify' => 'bail|in:RG,BN,EX'
+        ]);
+
+        $id = $request->get('medical_record_id');
+        $patientId = $request->get('patient');
+
+        $medicalRecord = MedicalRecord::find($id);
+        $medicalRecord->update($request->all());
+        return redirect()->route('client.myMedicalRecord.index', ['patient' => $patientId]);
     }
 }
