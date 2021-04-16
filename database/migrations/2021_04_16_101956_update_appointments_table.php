@@ -16,9 +16,9 @@ class UpdateAppointmentsTable extends Migration
     public function up()
     {
         Schema::table('appointments', function (Blueprint $table) {
-            $table->enum('type', array_keys(Appointment::TYPE))->default('TN')->after('reason');
+            $table->enum('type', array_keys(Appointment::TYPE))->default(Appointment::NORMAL_SHIFT)->after('reason');
         });
-        DB::raw("UPDATE appointments SET type='TN'");
+        DB::raw("UPDATE appointments SET type=:type", ['type' => Appointment::NORMAL_SHIFT]);
     }
 
     /**

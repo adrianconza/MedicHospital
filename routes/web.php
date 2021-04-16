@@ -69,6 +69,7 @@ Route::resource('medicine', MedicineController::class)->names('admin.medicine');
 Route::put('medicine/{id}/restore', [MedicineController::class, 'restore'])->name('admin.medicine.restore');
 
 Route::resource('appointment', AppointmentController::class)->except(['edit', 'update'])->names('admin.appointment');
+Route::post('appointment/store-extra-shift', [AppointmentController::class, 'storeExtraShift'])->name('admin.appointment.storeExtraShift');
 
 Route::resource('medical-exam', MedicalExamController::class)->only(['index', 'edit', 'update'])->names('admin.medicalExam');
 
