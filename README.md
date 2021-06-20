@@ -39,7 +39,7 @@ Hospital management system, using laravel and mysql.
 $ composer install
 
 # install npm dependencies
-$ npm run install
+$ npm i
 ```
 
 ## 🚀 Running with laravel server
@@ -94,7 +94,7 @@ $ php artisan migrate --seed
 ```
 
 ## 🤝 Support
-Support by [Adrian Conza](https://gitlab.com/adrianconza)
+Support by [Adrian Conza](https://github.com/adrianconza)
 
 ## 💬 Stay in touch
 - Author - [Adrian Conza](http://adrianconza.com/)
